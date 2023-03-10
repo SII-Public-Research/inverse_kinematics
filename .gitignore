@@ -1,0 +1,8 @@
+exemples/bras_2ddl/build
+exemples/bras_2ddl/log
+exemples/bras_2ddl/install
+exemples/bras_2ddl/src/motors_ctr/target
+exemples/bras_2ddl/src/motors_ctr/Cargo.lock
+
+livre/.vscode
+livre/book
