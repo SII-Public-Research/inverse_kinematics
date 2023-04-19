@@ -8,7 +8,7 @@ Le but final étant de pouvoir contrôler de manière précise un bras robotique
 # Outils
 
 Au sein de notre équipe, nous avons un petit faible pour le language RUST et son implémentation dans des cibles embarqués. 
-Nous avons donc souhaité utilisé ce language pour la partie embarquée.
+Nous avons donc souhaité utiliser ce language pour la partie embarquée.
 
 Nous utiliserons également le Python pour tester les approches mathématiques mises en avant afin de rapidement modéliser un système. Les principales librairies utilisées étant **numpy** et **sympy**
 
@@ -18,7 +18,7 @@ Enfin, les différents schémas sont tracés sur [draw.io](app.diagrams.net) et 
 # Matériel 
 
 Notre étude se voulant pratique, nous sommes parti sur un bras robotique disponible dans le commerce.
-C'est le 
+
 Les différents liens utiles étant :
 * [Achat](https://www.gotronic.fr/art-bras-robotique-joy-it-robot02-26637.html)
 * [Montage](https://www.gotronic.fr/pj2-robot02-guide-de-montage-1556.pdf)
