@@ -1,10 +1,11 @@
+use futures::future;
 use r2r;
 use r2r::messages::msg::AnglesMotors;
 use r2r::qos::QosProfile;
 // use r2r::r2r_minimal_node_msgs::srv::HelloWorld;
 
 use linux_embedded_hal::I2cdev;
-use sna41_motorsield::{servo::ServoNumber, MotorShield};
+use sna41_motorshield::{servo::ServoNumber, MotorShield};
 
 
 #[tokio::main]
@@ -19,11 +20,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let i2c = I2cdev::new("/dev/i2c-1").expect("Error creating I2c");
     let mut ms = MotorShield::new(i2c).expect("Error creating motorshield interface");
 
+    // Put all servo motors to default position 
+    ms.set_servo_angle(ServoNumber::S0, 0.0);
+    ms.set_servo_angle(ServoNumber::S1, 0.0);
+
     // Run in a tokio task
     tokio::task::spawn(async move {
 
         subscriber.for_each(|msg| {
             println!("New command: theta_1 = {}°, theta_2 = {}°", msg.theta_1, msg.theta_2);
+            ms.set_servo_angle(ServoNumber::S0, msg.theta_1);
+            ms.set_servo_angle(ServoNumber::S1, msg.theta_2);
             
             future::ready(())
         })
