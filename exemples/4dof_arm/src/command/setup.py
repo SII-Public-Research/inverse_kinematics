@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'algo_4dof = commande.commande:main'
+            'algo_4dof = command.command:main'
         ],
     },
 )
