@@ -5,5 +5,12 @@ exemples/bras_2ddl/src/motors_ctr/target
 exemples/bras_2ddl/src/motors_ctr/Cargo.lock
 exemples/bras_2ddl/__pycache__
 
+exemples/bras_3dof/build
+exemples/bras_3dof/log
+exemples/bras_3dof/install
+exemples/bras_3dof/src/motors_ctr/target
+exemples/bras_3dof/src/motors_ctr/Cargo.lock
+exemples/bras_3dof/__pycache__
+
 livre/.vscode
 livre/book
