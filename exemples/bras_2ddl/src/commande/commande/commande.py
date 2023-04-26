@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# See related drawio file to get the different distances and robot initial position
+
 import rclpy
 import rclpy.node
 
@@ -8,11 +10,11 @@ from messages.msg import MotorsAngles
 
 import numpy as np
 import math
+from itertools import product
 
 # Here we define all the constants we have on the arm
 a1 = 100.0
 a2 = 100.0
-a3 = 100.0
 
 class Algo(rclpy.node.Node):
     def __init__(self):
@@ -46,33 +48,44 @@ class Algo(rclpy.node.Node):
 
         # We first check if the command is a possible input 
         if x**2 + y**2 + (z - a1)**2 != a2**2:
-            print('Input command is not valid')
-        else:
-            theta_2 = np.arcsin((z - a1) / a2)
-            sol_theta_2_sin = [round(theta_2, 2), round(math.pi - theta_2, 2)]
-            sol_sin2_degree = [round(np.degrees(theta_2), 2), round(np.degrees(math.pi - theta_2), 2)]
+            self.get_logger().info('Input command is not valid', once=False)
+            # If the command is not valid, we propose to keep x and y and adjust z to a possible value. 
+            z = np.sqrt(a2**2 - x**2 - y**2) + a1
+            self.get_logger().info(f'We corrected z value to: {z}', once=False)
+        
+        # we have two equations for theta_2, giving cos or sin. We want both to select the correct angle from trigo circle
+        theta_2 = np.arcsin((z - a1) / a2)
+        sol_theta_2_sin = [theta_2, math.pi - theta_2]
+        sol_sin2_degree = [np.degrees(theta_2), np.degrees(math.pi - theta_2)]
+        theta_2 = np.arccos(np.sqrt((x**2 + y**2) / a2**2))
+        sol_theta_2_cos = [theta_2, -theta_2]
+        sol_cos2_degree = [np.degrees(theta_2), np.degrees(-theta_2)]
+        theta2_correct = sorted(product(np.mod(sol_theta_2_sin, 2*np.pi), np.mod(sol_theta_2_cos, 2*np.pi)), key=lambda t: abs(t[0]-t[1]))[0][0]
+        theta2_correct_degree = sorted(product(np.mod(sol_sin2_degree, 360), np.mod(sol_cos2_degree, 360)), key=lambda t: abs(t[0]-t[1]))[0][0]
 
-            theta_2 = np.arccos(np.sqrt((x**2 + y**2) / a2**2))
-            sol_theta_2_cos = [round(theta_2, 2), round(-theta_2, 2)]
-            sol_cos2_degree = [round(np.degrees(theta_2), 2), round(np.degrees(-theta_2), 2)]
 
-            theta2_correct = list(set(np.mod(sol_theta_2_sin, np.pi)).intersection(np.mod(sol_theta_2_cos, np.pi)))[0]
-            theta2_correct_degree = np.degrees(theta2_correct)
-            theta_1 = np.arcsin(y / (a2 * np.cos(theta2_correct)))
-            sol_theta_1_sin = [round(theta_1, 2), round(math.pi - theta_1, 2)]
-            sol_sin1_degree = [round(np.degrees(theta_1), 2), round(np.degrees(math.pi - theta_1), 2)]
-            theta_1 = np.arccos(x/(a2*np.cos(theta2_correct)))
-            sol_theta_1_cos = [round(theta_1, 2), round(-theta_1, 2)]
-            sol_cos1_degree = [round(np.degrees(theta_1), 2), round(np.degrees(-theta_1), 2)]
+        # same here for theta_1
+        theta_1 = np.arcsin(y / (a2 * np.cos(theta2_correct)))
+        sol_theta_1_sin = [theta_1, math.pi - theta_1]
+        sol_sin1_degree = [np.degrees(theta_1), np.degrees(math.pi - theta_1)]
+        theta_1 = np.arccos(round(x/(a2*np.cos(theta2_correct)), 4))
+        sol_theta_1_cos = [theta_1, -theta_1]
+        sol_cos1_degree = [np.degrees(theta_1), np.degrees(-theta_1)]
+        #theta1_correct = sorted(product(np.mod(sol_theta_1_sin, np.pi), np.mod(sol_theta_1_cos, np.pi)), key=lambda t: abs(t[0]-t[1]))[0][0]
+        theta1_correct_degree = sorted(product(np.mod(sol_sin1_degree, 360), np.mod(sol_cos1_degree, 360)), key=lambda t: abs(t[0]-t[1]))[0][0]
 
-            theta1_correct = list(set(np.mod(sol_theta_1_sin, np.pi)).intersection(np.mod(sol_theta_1_cos, np.pi)))[0]
-            theta1_correct_degree = np.degrees(theta1_correct)
+        # I have a problem on theta1 that can be > 180, AND MY SERVO CANNOT
+        if theta1_correct_degree > 180:
+            theta1_correct_degree -= 180
+            theta2_correct_degree = 180 - theta2_correct_degree
 
-            motors_angles = MotorsAngles()
-            motors_angles.theta_1 = theta1_correct_degree
-            motors_angles.theta_2 = theta2_correct_degree
+        # Then, we publish to the motor command
+        motors_angles = MotorsAngles()
+        motors_angles.theta_1 = theta1_correct_degree
+        motors_angles.theta_2 = theta2_correct_degree
+        self.get_logger().info(f"theta_1 = {theta1_correct_degree}, theta_2 = {theta2_correct_degree} ", once=False)
 
-            self.publisher.publish(motors_angles)
+        self.publisher.publish(motors_angles)
             
 
 

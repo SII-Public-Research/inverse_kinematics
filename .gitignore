@@ -3,6 +3,7 @@ exemples/bras_2ddl/log
 exemples/bras_2ddl/install
 exemples/bras_2ddl/src/motors_ctr/target
 exemples/bras_2ddl/src/motors_ctr/Cargo.lock
+exemples/bras_2ddl/__pycache__
 
 livre/.vscode
 livre/book
