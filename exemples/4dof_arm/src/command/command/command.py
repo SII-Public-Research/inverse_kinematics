@@ -56,7 +56,7 @@ class Algo(rclpy.node.Node):
         f, Df = lv.non_linear_least_squares_functions(pos, joints)
         x_lm, history_lm = lv.levenberg_marquardt(f, Df, [0,0,0], 0.1, 1e-4)
 
-        thetas = np.concatenate([np.arctan2(y,x)*180/np.pi], np.degrees(x_lm) % 360)
+        thetas = np.concatenate(np.array(np.arctan2(y,x)*180/np.pi), np.degrees(x_lm) % 360)
         self.get_logger().info(f"{thetas}")
 
         # I have a problem on theta1 that can be > 180, AND MY SERVO CANNOT

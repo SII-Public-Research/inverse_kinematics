@@ -6,17 +6,6 @@ This script was developed for target positionning with different algorithms.
 
 import numpy as np
 
-# a0 = 0
-# a1 = 3.75
-# a2 = 3.25
-# a3 = 6.05
-# joints = [a0,a1,a2,a3]
-# x = 0.87
-# y = 0
-# z = 10
-# pos = [x,y,z] #x,y,z
-
-
 def non_linear_least_squares_functions(pos, joints):
 
     # f(x) returns the residuals
@@ -49,6 +38,16 @@ def levenberg_marquardt(f, Df, x0, lambda0, tol = 1e-2, kmax = 100):
 
 
 if __name__ == '__main__':
+
+    a0 = 0
+    a1 = 3.75
+    a2 = 3.25
+    a3 = 6.05
+    joints = [a0,a1,a2,a3]
+    x = 0.87
+    y = 0
+    z = 10
+    pos = [x,y,z] #x,y,z
 
     # Target location using L-M with LLS estimation as starting point and lambda = 0.1
     f, Df = non_linear_least_squares_functions(pos, joints)
