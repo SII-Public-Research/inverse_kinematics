@@ -11,6 +11,13 @@ exemples/bras_3dof/install
 exemples/bras_3dof/src/motors_ctr/target
 exemples/bras_3dof/src/motors_ctr/Cargo.lock
 exemples/bras_3dof/__pycache__
+build/
+log/
+install/
+target/
+.vscode/
+exemples/4dof_arm/src/motors_ctr/Cargo.lock
+exemples/4dof_arm/__pycache__
 
 livre/.vscode
 livre/book
