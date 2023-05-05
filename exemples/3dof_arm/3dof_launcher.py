@@ -6,13 +6,13 @@ def generate_launch_description():
         Node(
             package='command',
             namespace='',
-            executable='algoTwoDdl',
-            name='two_dof_pos_to_angle'
+            executable='algoThreeDof',
+            name='three_dof_pos_to_angle'
         ),
         Node(
             package='motors_ctr',
             namespace='',
             executable='motors_ctr',
-            name='two_dof_motors_command'
+            name='three_dof_motors_command'
         ),
     ])

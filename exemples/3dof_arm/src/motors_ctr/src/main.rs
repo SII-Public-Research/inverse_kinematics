@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Put all servo motors to default position 
     ms.set_servo_angle(ServoNumber::S0, 0.0);
     ms.set_servo_angle(ServoNumber::S1, 90.0);
-    ms.set_servo_angle(ServoNumber::S1, 90.0);
+    ms.set_servo_angle(ServoNumber::S2, 0.0);
 
     // Run in a tokio task
     tokio::task::spawn(async move {
@@ -30,8 +30,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         subscriber.for_each(|msg| {
             println!("New command: theta_1 = {}°, theta_2 = {}°, theta_3 = {}°", msg.theta_1, msg.theta_2, msg.theta_3);
             ms.set_servo_angle(ServoNumber::S0, msg.theta_1 as f32);
-            ms.set_servo_angle(ServoNumber::S1, msg.theta_2 as f32);
+            ms.set_servo_angle(ServoNumber::S1, (msg.theta_2 as f32) + 90.0);
             ms.set_servo_angle(ServoNumber::S2, msg.theta_3 as f32);
+            
             
             future::ready(())
         })

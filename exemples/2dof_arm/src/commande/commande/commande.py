@@ -39,12 +39,12 @@ class Algo(rclpy.node.Node):
         y = message.y
         z = message.z
 
-        print('received message')
-        print('Objectif :')
-        print(f'X = {x}') 
-        print(f'Y = {y}') 
-        print(f'Z = {z}')
-        print('')
+        self.get_logger().info('received message', once=False)
+        self.get_logger().info('Objectif :', once=False)
+        self.get_logger().info(f'X = {x}', once=False) 
+        self.get_logger().info(f'Y = {y}', once=False) 
+        self.get_logger().info(f'Z = {z}', once=False)
+        self.get_logger().info('', once=False)
 
         # We first check if the command is a possible input 
         if x**2 + y**2 + (z - a1)**2 != a2**2:

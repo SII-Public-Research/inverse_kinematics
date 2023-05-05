@@ -11,6 +11,7 @@
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>messages</exec_depend>
   <exec_depend>numpy</exec_depend>
+  <exec_depend>sympy</exec_depend>
   <exec_depend>math</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
