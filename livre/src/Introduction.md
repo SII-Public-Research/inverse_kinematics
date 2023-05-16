@@ -1,21 +1,20 @@
 # Introduction
 
-Ce livre a pour but de présenter la démarche expérimentale que nous avons mise en oeuvre afin de maîtriser, ou du moins mieux apréhender, les techniques de cinématiques inverses utilisées en robotique. 
+Ce livre a pour but de présenter la démarche expérimentale que nous avons mise en œuvre afin de maîtriser, ou du moins mieux appréhender, les techniques de cinématiques inverses utilisées en robotique. 
 
-Le but final étant de pouvoir contrôler de manière précise un bras robotique comprenant 6 degrés de libertés. 
+Le but final étant de pouvoir contrôler de manière précise un bras robotique comprenant 5 degrés de libertés. 
 
 
 # Outils
 
-Au sein de notre équipe, nous avons un petit faible pour le language RUST et son implémentation dans des cibles embarqués. 
-Nous avons donc souhaité utiliser ce language pour la partie embarquée.
+Au sein de notre équipe, nous avons un petit faible pour le langage RUST et son implémentation dans des cibles embarqués. 
+Nous avons donc souhaité utiliser ce langage pour la partie embarquée.
 
-Nous utiliserons également le Python pour tester les approches mathématiques mises en avant afin de rapidement modéliser un système. Les principales librairies utilisées étant **numpy** et **sympy**
+Du Python sera utilisé pour tester les approches mathématiques mises en avant afin de rapidement modéliser un système. Les principales librairies utilisées étant **numpy** et **sympy**
 
-Enfin, les différents schémas sont tracés sur [draw.io](app.diagrams.net) et nous utilisons [WolfromAlpha](www.wolframalpha.com) pour mettre en forme les formules. 
+Enfin, nous créerons un lien entre la commande moteur et les algorithmes en utilisant l’environnement ROS (robot operating system). 
 
-
-# Matériel 
+# Matériel
 
 Notre étude se voulant pratique, nous sommes parti sur un bras robotique disponible dans le commerce.
 
@@ -24,8 +23,8 @@ Les différents liens utiles étant :
 * [Montage](https://www.gotronic.fr/pj2-robot02-guide-de-montage-1556.pdf)
 
 
-Afin de contrôler le bras, nous avons détéré un vieux shield moteur que nous avions déjà utilisé auparavent, en ajoutant des fonctionnalités de contrôle de servomoteurs.
+Afin de contrôler le bras, nous avons déterré un vieux shield moteur que nous avions déjà utilisé auparavant, en ajoutant des fonctionnalités de contrôle de servomoteurs.
 Les différents liens utiles étant :
-* [Presentation](https://www.makerbuying.com/docs/new-sna41)
+* [Présentation](https://www.makerbuying.com/docs/new-sna41)
 * [crate RUST](https://github.com/SII-Public-Research/sna41-motorshield)
 

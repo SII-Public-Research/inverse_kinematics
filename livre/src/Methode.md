@@ -1,4 +1,4 @@
-# Methode
+# Méthode
 
 
 Nous décomposerons l'étude du bras final en plusieurs sous-parties, en partant d'un système comprenant 2 degrés de libertés et en en ajoutant un par un jusqu'à atteindre le nombre de degrés de libertés du bras réel. 
