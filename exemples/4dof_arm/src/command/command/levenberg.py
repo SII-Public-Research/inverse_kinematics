@@ -51,11 +51,11 @@ def levenberg_marquardt_2(f, Df, x0, lambda0, tol = 1e-2, kmax = 100):
         
         # handle 180° limit
         for m in range(n):
-            if xt[m] > np.pi:
-                xt[m] = np.pi
+            if xt[m] > 0.9 * np.pi:
+                xt[m] = 0.9 * np.pi
                 #print("grand")
-            elif xt[m] < 0.0:
-                xt[m] = 0.0
+            elif xt[m] < 0.1 * np.pi:
+                xt[m] = 0.1
                 #print("petit")
                 
 
