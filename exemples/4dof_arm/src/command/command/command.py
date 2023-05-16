@@ -57,7 +57,7 @@ class Algo(rclpy.node.Node):
         f, Df = lv.non_linear_least_squares_functions(pos, joints)
         x_lm, history_lm = lv.levenberg_marquardt_2(f, Df, [0,0,0], 0.1, 1e-4)
 
-        thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi]), np.degrees(x_lm)])
+        thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi % 360]), np.degrees(x_lm)])
         self.get_logger().info(f"{thetas}")        
         self.get_logger().info(f"{thetas % 360}")
 
