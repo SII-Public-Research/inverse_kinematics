@@ -36,6 +36,37 @@ def levenberg_marquardt(f, Df, x0, lambda0, tol = 1e-2, kmax = 100):
     return x, {'Objective':obj, 'Residual':res}
 
 
+def levenberg_marquardt_2(f, Df, x0, lambda0, tol = 1e-2, kmax = 100):
+    n = len(x0)
+    x = x0
+    lam = lambda0
+    obj = np.zeros((0,1))
+    res = np.zeros((0,1))
+    for k in range(kmax):
+        obj = np.vstack([obj, np.linalg.norm(f(x))**2])
+        res = np.vstack([res, np.linalg.norm(2*Df(x).T @ f(x))])
+        if np.linalg.norm(2*Df(x).T @ f(x)) < tol:
+            break
+        xt = x - np.linalg.inv((Df(x).T @ Df(x)) + lam*np.eye(n)) @ (Df(x).T @ f(x))
+        
+        # handle 180° limit
+        for m in range(n):
+            if xt[m] > np.pi:
+                xt[m] = np.pi
+                #print("grand")
+            elif xt[m] < 0.0:
+                xt[m] = 0.0
+                #print("petit")
+                
+
+        if np.linalg.norm(f(xt)) < np.linalg.norm(f(x)) :
+            lam = 0.8*lam
+            x = xt
+        else:
+            lam = 2.0*lam
+    return x, {'Objective':obj, 'Residual':res}
+
+
 
 if __name__ == '__main__':
 

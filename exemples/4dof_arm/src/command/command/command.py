@@ -14,10 +14,11 @@ import math
 from itertools import product
 
 # Here we define all the constants we have on the arm
-a1 = 100.0
-a2 = 100.0
+a1 = 85.0
+a2 = 105.0
 a3 = 100.0
-a4 = 100.0
+a4 = 30.0
+a5 = 50.0
 
 class Algo(rclpy.node.Node):
     def __init__(self):
@@ -49,15 +50,16 @@ class Algo(rclpy.node.Node):
         print(f'Z = {z}')
         print('')
 
-        pos = [x, y, z]
-        joints = [a1, a2, a3, a4]
+        pos = [x, y, z] # vecteur de la position voulue
+        joints = [a1, a2, a3, a4] # vecteur avec la taille des différentes branches
 
         # Target location using L-M with LLS estimation as starting point and lambda = 0.1
         f, Df = lv.non_linear_least_squares_functions(pos, joints)
-        x_lm, history_lm = lv.levenberg_marquardt(f, Df, [0,0,0], 0.1, 1e-4)
+        x_lm, history_lm = lv.levenberg_marquardt_2(f, Df, [0,0,0], 0.1, 1e-4)
 
-        thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi]), np.degrees(x_lm) % 360])
-        self.get_logger().info(f"{thetas}")
+        thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi]), np.degrees(x_lm)])
+        self.get_logger().info(f"{thetas}")        
+        self.get_logger().info(f"{thetas % 360}")
 
         # I have a problem on theta1 that can be > 180, AND MY SERVO CANNOT
         if thetas[0] > 180:
