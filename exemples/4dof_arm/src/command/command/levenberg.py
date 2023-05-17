@@ -7,6 +7,7 @@ This script was developed for target positionning with different algorithms.
 import numpy as np
 
 def non_linear_least_squares_functions(pos, joints):
+    print(f'{joints}')
 
     # f(x) returns the residuals
     f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - pos[0],
@@ -50,13 +51,16 @@ def levenberg_marquardt_2(f, Df, x0, lambda0, tol = 1e-2, kmax = 100):
         xt = x - np.linalg.inv((Df(x).T @ Df(x)) + lam*np.eye(n)) @ (Df(x).T @ f(x))
         
         # handle 180° limit
-        for m in range(n):
-            if xt[m] > 0.9 * np.pi:
-                xt[m] = 0.9 * np.pi
-                #print("grand")
-            elif xt[m] < 0.1 * np.pi:
-                xt[m] = 0.1
-                #print("petit")
+        #for m in range(n):
+            # if xt[m] > 0.9 * np.pi:
+            #     xt[m] = 0.9 * np.pi
+            #     #print("grand")
+            # elif xt[m] < 0.1 * np.pi:
+            #     xt[m] = 0.1
+            #     #print("petit")
+        xt[0] = np.clip(xt[0],  0.1 * np.pi, 0.9 * np.pi) #   0 - 180
+        xt[1] = np.clip(xt[1], -0.4 * np.pi, 0.4 * np.pi) # -90 - 90
+        xt[2] = np.clip(xt[2], -0.4 * np.pi, 0.4 * np.pi) # -90 - 90
                 
 
         if np.linalg.norm(f(xt)) < np.linalg.norm(f(x)) :
