@@ -26,6 +26,10 @@ S2 & C2 & 0 & a_2S2\\\\
 \end{array}\right)
 $$
 
+
+Avec $$ S1 = sin(θ_1), S2 = sin(θ_2), C1 = cos(θ_1), C2 = cos(θ_2) $$
+
+
 Une fois les matrices de transitions pour chaque liaisons réalisés, nous pouvons faire leur produit matriciel afin d'obtenir la matrice caractéristique du système étudié. 
 
 $$
@@ -51,8 +55,8 @@ $$
 Pour **θ<sub>1</sub>**, nous pouvons calculer son sinus et son cosinus à partir des équations de Y et X :
 $$
 \begin{cases}
-    S1  = \cfrac{y}{a_2 * cos(θ_2)}\\\\
-    C1 = \cfrac{x}{a_2 * cos(θ_2)}
+    sin(θ_1)  = \cfrac{y}{a_2 * cos(θ_2)}\\\\
+    cos(θ_1) = \cfrac{x}{a_2 * cos(θ_2)}
 \end{cases}
 $$
 
@@ -65,8 +69,8 @@ $$
 Pour **θ<sub>2</sub>**, nous pouvons calculer son sinus et son cosinus à partir des équations de Z et X (ou Y) :
 $$
 \begin{cases}
-S2 = \cfrac{z - a_1}{a_2}\\\\
-C2 = \cfrac{x}{a_2 * cos(θ_1)}
+sin(θ_2) = \cfrac{z - a_1}{a_2}\\\\
+cos(θ_2) = \cfrac{x}{a_2 * cos(θ_1)}
 \end{cases}
 $$
 
