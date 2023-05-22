@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'algoFourDof = command.command:main'
+            'algoFourDof_bis = command.command:main'
         ],
     },
 )

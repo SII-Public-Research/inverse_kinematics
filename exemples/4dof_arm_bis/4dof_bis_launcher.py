@@ -6,7 +6,7 @@ def generate_launch_description():
         Node(
             package='command',
             namespace='',
-            executable='algoFourDof',
+            executable='algoFourDof_bis',
             name='four_dof_pos_to_angle'
         ),
         Node(
