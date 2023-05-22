@@ -32,8 +32,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("New command: theta_1 = {}°, theta_2 = {}°, theta_3 = {}°, theta_4 = {}°", msg.theta_1, msg.theta_2, msg.theta_3, msg.theta_4);
             ms.set_servo_angle(ServoNumber::S0, msg.theta_1 as f32).expect("Error setting motor");
             ms.set_servo_angle(ServoNumber::S1, msg.theta_2 as f32).expect("Error setting motor");
-            ms.set_servo_angle(ServoNumber::S2, msg.theta_3 + 90.0 as f32).expect("Error setting motor");
-            ms.set_servo_angle(ServoNumber::S3, msg.theta_4 + 90.0 as f32).expect("Error setting motor");
+            ms.set_servo_angle(ServoNumber::S2, 90_f32 + msg.theta_3 as f32).expect("Error setting motor");
+            ms.set_servo_angle(ServoNumber::S3, 90_f32 + msg.theta_4 as f32).expect("Error setting motor");
             
             future::ready(())
         })
