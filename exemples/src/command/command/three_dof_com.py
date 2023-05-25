@@ -11,7 +11,6 @@ from messages.msg import MotorsAngles
 import numpy as np
 import sympy as sp
 import math
-from itertools import product
 
 # Here we define all the constants we have on the arm
 a1 = 100.0
@@ -82,6 +81,7 @@ class Algo(rclpy.node.Node):
         motors_angles.theta_1 = theta_1_degree
         motors_angles.theta_2 = theta_2_degree
         motors_angles.theta_3 = theta_3_degree
+        motors_angles.theta_4 = 0.0
         self.get_logger().info(f"theta_1 = {theta_1_degree}, theta_2 = {theta_2_degree}, theta_3 = {theta_3_degree} ", once=False)
 
         self.publisher.publish(motors_angles)

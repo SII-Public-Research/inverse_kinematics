@@ -1,3 +1,0 @@
-# Example of how to do idl package filtering.
-[env]
-IDL_PACKAGE_FILTER = { value = "messages" }

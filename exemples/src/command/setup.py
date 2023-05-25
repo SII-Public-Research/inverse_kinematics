@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'commande'
+package_name = 'command'
 
 setup(
     name=package_name,
@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'algoTwoDdl = commande.commande:main'
+            'algoTwoDof = command.two_dof_com:main',
+            'algoThreeDof = command.three_dof_com:main',
+            'algoFourDof = command.four_dof_com:main'
         ],
     },
 )

@@ -10,11 +10,10 @@ from messages.msg import MotorsAngles
 
 import numpy as np
 import math
-from itertools import product
 
 # Here we define all the constants we have on the arm
-a1 = 100.0
-a2 = 100.0
+a1 = 85.0
+a2 = 105.0 + 100.0
 
 class Algo(rclpy.node.Node):
     def __init__(self):
@@ -53,26 +52,28 @@ class Algo(rclpy.node.Node):
             z = np.sqrt(a2**2 - x**2 - y**2) + a1
             self.get_logger().info(f'We corrected z value to: {z}', once=False)
         
-        # we have two equations for theta_2, giving cos or sin. We want both to select the correct angle from trigo circle
-        theta_2 = np.arcsin((z - a1) / a2)
-        sol_theta_2_sin = [theta_2, math.pi - theta_2]
-        sol_sin2_degree = [np.degrees(theta_2), np.degrees(math.pi - theta_2)]
-        theta_2 = np.arccos(np.sqrt((x**2 + y**2) / a2**2))
-        sol_theta_2_cos = [theta_2, -theta_2]
-        sol_cos2_degree = [np.degrees(theta_2), np.degrees(-theta_2)]
-        theta2_correct = sorted(product(np.mod(sol_theta_2_sin, 2*np.pi), np.mod(sol_theta_2_cos, 2*np.pi)), key=lambda t: abs(t[0]-t[1]))[0][0]
-        theta2_correct_degree = sorted(product(np.mod(sol_sin2_degree, 360), np.mod(sol_cos2_degree, 360)), key=lambda t: abs(t[0]-t[1]))[0][0]
 
+        # We can have S2 with Z eq
+        S2 = (z - a1) / a2
+        # Then, we can get 2 values for C2 according to eq cos² + sin² = 1
+        C2_pos = np.sqrt(1 - S2**2)
+        C2_neg = -np.sqrt(1 - S2**2)
+        # Finally, we got theta_2 from atan2
+        theta_2 = math.atan2(S2, C2_pos)
+        theta_2_bis = math.atan2(S2, C2_neg)
+        # Note that we have two possible values for theta_2.
+        # We noticed that the first one is all the time working fine on our case
 
-        # same here for theta_1
-        theta_1 = np.arcsin(y / (a2 * np.cos(theta2_correct)))
-        sol_theta_1_sin = [theta_1, math.pi - theta_1]
-        sol_sin1_degree = [np.degrees(theta_1), np.degrees(math.pi - theta_1)]
-        theta_1 = np.arccos(round(x/(a2*np.cos(theta2_correct)), 4))
-        sol_theta_1_cos = [theta_1, -theta_1]
-        sol_cos1_degree = [np.degrees(theta_1), np.degrees(-theta_1)]
-        #theta1_correct = sorted(product(np.mod(sol_theta_1_sin, np.pi), np.mod(sol_theta_1_cos, np.pi)), key=lambda t: abs(t[0]-t[1]))[0][0]
-        theta1_correct_degree = sorted(product(np.mod(sol_sin1_degree, 360), np.mod(sol_cos1_degree, 360)), key=lambda t: abs(t[0]-t[1]))[0][0]
+        # We can have S1 from Y eq
+        S1 = y / (a2 * np.cos(theta_2))
+        # We can have C1 with X eq
+        C1 = x / (a2 * np.cos(theta_2))
+        # Finally, we got theta_2 from atan2
+        theta_1 = math.atan2(S1, C1)
+
+        theta2_correct_degree = np.mod(np.degrees(theta_2), 360)
+        theta1_correct_degree = np.mod(np.degrees(theta_1), 360)
+
 
         # I have a problem on theta1 that can be > 180, AND MY SERVO CANNOT
         if theta1_correct_degree > 180:
@@ -83,6 +84,8 @@ class Algo(rclpy.node.Node):
         motors_angles = MotorsAngles()
         motors_angles.theta_1 = theta1_correct_degree
         motors_angles.theta_2 = theta2_correct_degree
+        motors_angles.theta_3 = 90.0
+        motors_angles.theta_4 = 0.0
         self.get_logger().info(f"theta_1 = {theta1_correct_degree}, theta_2 = {theta2_correct_degree} ", once=False)
 
         self.publisher.publish(motors_angles)
