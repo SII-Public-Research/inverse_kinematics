@@ -17,7 +17,7 @@ from itertools import product
 
 class Algo(rclpy.node.Node):
     def __init__(self):
-        super().__init__('algoFourDof_bis')
+        super().__init__('algoFourDof')
         # create a publisher to put the values of motos angles
         self.publisher = self.create_publisher(
             MotorsAngles, 
@@ -105,12 +105,12 @@ def main(args=None):
 
     rclpy.init(args=args)
 
-    algo_four_dof_bis = Algo()
+    algo_four_dof = Algo()
 
     
-    rclpy.spin(algo_four_dof_bis)
+    rclpy.spin(algo_four_dof)
 
-    algo_four_dof_bis.destroy_node()
+    algo_four_dof.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
