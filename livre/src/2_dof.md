@@ -46,9 +46,9 @@ Dans ce cas précis, avec uniquement deux liaisons, le système est relativement
 
 $$ 
 \begin{cases}
-    x_0 = a_2 * cos(θ_1) * cos(θ_2) \\\\
-    y_0 = a_2 * sin(θ_1) * cos(θ_2) \\\\
-    z_0 = a_1 + a_2 * sin(θ_2)
+    x = a_2 * cos(θ_1) * cos(θ_2) \\\\
+    y = a_2 * sin(θ_1) * cos(θ_2) \\\\
+    z = a_1 + a_2 * sin(θ_2)
 \end{cases}
 $$
 

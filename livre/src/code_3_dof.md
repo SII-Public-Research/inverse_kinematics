@@ -86,7 +86,7 @@ print(f'theta_3 = {np.degrees(theta_3)}')
 print(f'theta_3_bis = {np.degrees(theta_3_bis)}')
 # Note that both values are possibles positions for the arm
 
-# To get theta_1, we first define some constantes to get simple equations
+# To get theta_2, we first define some constantes to get simple equations
 k1 = a2 + a3 * np.sin(theta_3)
 k2 = a3 * np.cos(theta_3)
 Z = z - a1

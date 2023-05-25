@@ -242,9 +242,9 @@ $$</p>
 <p>Dans ce cas précis, avec uniquement deux liaisons, le système est relativement simple et nous pouvons nous contenter d'utiliser la dernière colonne de la matrice qui représente les équations de la position finale du bras en fonction des angles des moteurs.</p>
 <p>$$ 
 \begin{cases}
-x_0 = a_2 * cos(θ_1) * cos(θ_2) \\
-y_0 = a_2 * sin(θ_1) * cos(θ_2) \\
-z_0 = a_1 + a_2 * sin(θ_2)
+x = a_2 * cos(θ_1) * cos(θ_2) \\
+y = a_2 * sin(θ_1) * cos(θ_2) \\
+z = a_1 + a_2 * sin(θ_2)
 \end{cases}
 $$</p>
 <p>Pour <strong>θ<sub>1</sub></strong>, nous pouvons calculer son sinus et son cosinus à partir des équations de Y et X :
@@ -365,6 +365,95 @@ theta_1 = math.atan2(S1, C1)
 print(f'theta_1 = {np.mod(np.degrees(theta_1), 360)}')
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="3_dof-robotic-arm"><a class="header" href="#3_dof-robotic-arm">3_dof robotic arm</a></h1>
+<p>Ajoutons un servo-moteur à notre bras. 
+Nous obtenons ainsi un système comprenant 3 degrés de libertés. </p>
+<p>En respectant les conventions de <strong>Denavit-Hartenberg</strong>, nous pouvons construire le schéma représentatif :
+<img src="images/3dof_luna_arm.drawio.png" alt="schema_3dof" /></p>
+<p>Nous choisissons pour cette étude de changer la position initiale entre le segment <strong>OA</strong> et <strong>AB</strong>, que nous fixons à 180°. Pour la position initiale du 3ème moteur, nous choisissons un angle de 90° entre le segment <strong>AB</strong> et <strong>BM</strong>. Nous pouvons ainsi écrire les matrices de transitions correspondantes :</p>
+<p>$$
+T01 = 
+\left(\begin{array}{cc}
+C1 &amp; 0 &amp; S1 &amp; 0\\
+S1 &amp; 0 &amp; -C1 &amp; 0\\
+0 &amp; 1 &amp; 0 &amp; a_1\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>$$
+T12 = 
+\left(\begin{array}{cc}
+C2 &amp; -S2 &amp; 0 &amp; -a_2S2\\
+S2 &amp; C2 &amp; 0 &amp; a_2C2\\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>$$
+T23 = 
+\left(\begin{array}{cc}
+C3 &amp; -S3 &amp; 0 &amp; a_3C2\\
+S3 &amp; C3 &amp; 0 &amp; a_3S2\\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>La matrice représentative du système est alors plus complexe, et l'on commence à distinguer quelques difficultés à trouver une solution simple au système : </p>
+<p>$$
+T03 = 
+\left(\begin{array}{cc}
+C1(C2C3 - S2S3) &amp; -C1(S2C3 + C2S3) &amp; S1 &amp; C1(-a_2S2 + a_3C23)\\
+S1(C2C3 - S2S3) &amp; -S1(S2C3 + C2S3) &amp; -C1 &amp; S1(-a_2S2 + a_3C23)\\
+S2C3 + S3C2 &amp; -S2S3 + C2C3 &amp; 0 &amp; a_1 + a_2C2 + a_3S23\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>Cependant, en utilisant toujours uniquement les équations sur (X, Y, Z), on obtient un système à 3 équations et 3 inconnues qu'il est possible de résoudre. </p>
+<p>$$ 
+\begin{cases}
+x = cos(θ_1)(-a_2 * sin(θ_2) + a_3 * cos(θ_2 + θ_3)) \\
+y = sin(θ_1)(-a_2 * sin(θ_2) + a_3 * cos(θ_2 + θ_3))\\
+z = a_1 + a_2 * sin(θ_2)
+\end{cases}
+$$</p>
+<p>En effet, on constate qu'il est facile d'obtenir <strong>θ<sub>1</sub></strong>, en utilisant la même méthode que pour le bras 2ddl :
+$$
+θ_1 = atan2(\cfrac{y}{x})
+$$</p>
+<p>Ensuite, <strong>sin(θ<sub>3</sub>)</strong> est obtenu en faisant la somme des trois équations misent au carré, et en utilisant les propriétés du sinus sin(a-b) :
+$$
+sin(θ_3) = \cfrac{a_1^2 - a_2^2 - a_3^2 + x^2 + y^2 + z^2 - 2 * a_1 * z} {2 * a_2 * a_3}
+$$</p>
+<p>On récupère ensuite la valeur de <strong>cos(θ<sub>3</sub>)</strong> en utilisant la propriété <strong>cos² + sin² = 1</strong>
+$$
+C3 = ±\sqrt{1 - S3^2}
+$$
+On peut noter que l'on aura deux valeurs possibles de <strong>θ<sub>3</sub></strong>, qui correspondront à deux configurations possibles du bras. 
+$$
+θ_3 = atan2(\cfrac{S3}{C3})
+$$</p>
+<p>Une fois <strong>θ<sub>1</sub></strong> et <strong>θ<sub>2</sub></strong> obtenus, il est alors possible, en simplifiant les équations, de retrouver un système à deux équations et 2 inconnues (C2 et S2)
+$$
+soit :
+\begin{cases}
+k_1 = a_2 + a_3 * S3\\
+k_2 = a_3 * C3\\
+Z = z - a_1\\
+X = \cfrac{x - y} {C1 - S1}\\
+\end{cases}
+alors :
+\begin{cases}
+X = k_2 * C2 - k_1 * S2\\
+Z = k_1 * C2 + k_2 * S2
+\end{cases}
+$$</p>
+<p>Pour simplifier cette partie là, nous avons laissé à Python le soin de résoudre le système pour nous : </p>
+<pre><code class="language-python">eq1 = sp.Eq(k2 * C2 - k1 * S2, X)
+eq2 = sp.Eq(k1 * C2 + k2 * S2, Z)
+eq = [eq1, eq2]
+
+sol = sp.solve(eq, C2, S2)
+theta_2 = math.atan2(sol[S2], sol[C2])
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="code-1"><a class="header" href="#code-1">Code</a></h1>
 <pre><code class="language-python"># -*- coding: utf-8 -*-
 &quot;&quot;&quot;
@@ -452,7 +541,7 @@ print(f'theta_3 = {np.degrees(theta_3)}')
 print(f'theta_3_bis = {np.degrees(theta_3_bis)}')
 # Note that both values are possibles positions for the arm
 
-# To get theta_1, we first define some constantes to get simple equations
+# To get theta_2, we first define some constantes to get simple equations
 k1 = a2 + a3 * np.sin(theta_3)
 k2 = a3 * np.cos(theta_3)
 Z = z - a1
