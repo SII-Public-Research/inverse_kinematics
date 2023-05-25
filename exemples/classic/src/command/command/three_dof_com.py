@@ -13,8 +13,8 @@ import sympy as sp
 import math
 
 # Here we define all the constants we have on the arm
-a1 = 100.0
-a2 = 100.0
+a1 = 85.0
+a2 = 105.0
 a3 = 100.0
 
 class Algo(rclpy.node.Node):
