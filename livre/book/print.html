@@ -207,10 +207,21 @@ colcon build
 <pre><code class="language-bash">ros2 topic pub --once /cmd_arm geometry_msgs/msg/Point &quot;{x = 0.0, y = 0.0, z = 200.0}&quot;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="2-dof-robotic-arm"><a class="header" href="#2-dof-robotic-arm">2 dof robotic arm</a></h1>
+<p>Pour ce chapitre ainsi que les suivants, la méthode sera similaire :</p>
+<ul>
+<li><strong>Schéma cinématique</strong> <em>pour simplifier au maximum le système visuellement</em></li>
+<li><strong>Matrices de transition</strong> <em>pour découper le problème et représenter mathématiquement chaque liaison</em></li>
+<li><strong>Matrice caractéristique</strong> <em>pour rassembler les petits problèmes et représenter le système complet</em></li>
+<li><strong>Cinématique normale</strong> <em>qui décrit la position du bras suivant les angles des liaisons</em></li>
+<li><strong>Cinématique inverse</strong> <em>qui décrit les angles des liaisons suivant la position du bras</em></li>
+</ul>
+<h2 id="schéma-cinématique"><a class="header" href="#schéma-cinématique">Schéma cinématique</a></h2>
 <p>Commençons par monter uniquement deux servomoteurs sur notre bras. 
 En respectant les conventions de <strong>Denavit-Hartenberg</strong>, nous pouvons construire le schéma représentatif :
 <img src="images/2dof_luna_arm.drawio.png" alt="schema_2dof" /></p>
-<p>Une fois la position initiale du robot choisie, ici un angle de 90° entre le segment <strong>OA</strong> et <strong>AM</strong>, nous pouvons écrire les matrices de transitions correspondantes :</p>
+<h2 id="matrices-de-transition"><a class="header" href="#matrices-de-transition">Matrices de transition</a></h2>
+<p>Une fois le schéma déssiné, il est possible de découper le problème en plus petites étapes. Chaque matrice de transition représente les rotations et transitions d'une liaison. 
+Une fois la position initiale du robot choisie, ici un angle de 90° entre le segment <strong>OA</strong> et <strong>AM</strong>, nous pouvons écrire les matrices de transitions correspondantes :</p>
 <p>$$
 T01 = 
 \left(\begin{array}{cc}
@@ -230,6 +241,7 @@ S2 &amp; C2 &amp; 0 &amp; a_2S2\\
 \end{array}\right)
 $$</p>
 <p>Avec $$ S1 = sin(θ_1), S2 = sin(θ_2), C1 = cos(θ_1), C2 = cos(θ_2) $$</p>
+<h2 id="matrice-caractéristique"><a class="header" href="#matrice-caractéristique">Matrice caractéristique</a></h2>
 <p>Une fois les matrices de transitions pour chaque liaisons réalisés, nous pouvons faire leur produit matriciel afin d'obtenir la matrice caractéristique du système étudié. </p>
 <p>$$
 T02 = 
@@ -240,7 +252,8 @@ S2 &amp; C2 &amp; 0 &amp; a_1 + a_2S2\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
-<p>Dans ce cas précis, avec uniquement deux liaisons, le système est relativement simple et nous pouvons nous contenter d'utiliser la dernière colonne de la matrice qui représente les équations de la position finale du bras en fonction des angles des moteurs.</p>
+<h2 id="cinématique-normale"><a class="header" href="#cinématique-normale">Cinématique normale</a></h2>
+<p>Dans ce cas précis, avec uniquement deux liaisons, le système est relativement simple et nous pouvons nous contenter d'utiliser la dernière colonne de la matrice qui représente les équations de la position finale du bras en fonction des angles des moteurs. Ces équations représentent à quelle position <strong>(x,y,z)</strong> le bout du bras est, connaissant les angles <strong>θ<sub>1</sub></strong> et <strong>θ<sub>2</sub></strong>. </p>
 <p>$$ 
 \begin{cases}
 x = a_2 * cos(θ_1) * cos(θ_2) \\
@@ -248,6 +261,9 @@ y = a_2 * sin(θ_1) * cos(θ_2) \\
 z = a_1 + a_2 * sin(θ_2)
 \end{cases}
 $$</p>
+<p>C'est la cinématique du système. Cependant nous recherchons l'inverse : quels angles <strong>θ<sub>1</sub></strong> et <strong>θ<sub>2</sub></strong> prendre pour que le bras aille à la position <strong>(x,y,z)</strong> voulue.</p>
+<h2 id="cinématique-inverse"><a class="header" href="#cinématique-inverse">Cinématique inverse</a></h2>
+<h3 id="θ1"><a class="header" href="#θ1">θ<sub>1</sub></a></h3>
 <p>Pour <strong>θ<sub>1</sub></strong>, nous pouvons calculer son sinus et son cosinus à partir des équations de Y et X :
 $$
 \begin{cases}
@@ -259,6 +275,7 @@ $$</p>
 <p>$$
 θ_1 = atan2(\cfrac{y}{x})
 $$</p>
+<h3 id="θ2"><a class="header" href="#θ2">θ<sub>2</sub></a></h3>
 <p>Pour <strong>θ<sub>2</sub></strong>, nous pouvons calculer son sinus et son cosinus à partir des équations de Z et X (ou Y) :
 $$
 \begin{cases}
@@ -270,6 +287,7 @@ $$</p>
 <p>$$
 θ_2 = atan2(\cfrac{(z - a_1) * cos(θ_1)}{x})
 $$</p>
+<h2 id="conclusion-et-amélioration"><a class="header" href="#conclusion-et-amélioration">Conclusion et amélioration</a></h2>
 <p>Nous pouvons observer qu'il est relativement facile dans le cas de deux liaisons d'obtenir une cinématique inverse du système. </p>
 <p>En revanche, le système est limité et ne peut atteindre qu'un champ réduit de points, correspondant à une sphère de rayon a2. 
 Nous notons également que dans notre cas d'étude, les servomoteurs ont une portée comprise entre 0 et 180°.</p>
@@ -368,8 +386,10 @@ print(f'theta_1 = {np.mod(np.degrees(theta_1), 360)}')
 <div style="break-before: page; page-break-before: always;"></div><h1 id="3_dof-robotic-arm"><a class="header" href="#3_dof-robotic-arm">3_dof robotic arm</a></h1>
 <p>Ajoutons un servo-moteur à notre bras. 
 Nous obtenons ainsi un système comprenant 3 degrés de libertés. </p>
+<h2 id="schéma-cinématique-1"><a class="header" href="#schéma-cinématique-1">Schéma cinématique</a></h2>
 <p>En respectant les conventions de <strong>Denavit-Hartenberg</strong>, nous pouvons construire le schéma représentatif :
 <img src="images/3dof_luna_arm.drawio.png" alt="schema_3dof" /></p>
+<h2 id="matrices-de-transition-1"><a class="header" href="#matrices-de-transition-1">Matrices de transition</a></h2>
 <p>Nous choisissons pour cette étude de changer la position initiale entre le segment <strong>OA</strong> et <strong>AB</strong>, que nous fixons à 180°. Pour la position initiale du 3ème moteur, nous choisissons un angle de 90° entre le segment <strong>AB</strong> et <strong>BM</strong>. Nous pouvons ainsi écrire les matrices de transitions correspondantes :</p>
 <p>$$
 T01 = 
@@ -398,6 +418,7 @@ S3 &amp; C3 &amp; 0 &amp; a_3S2\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
+<h2 id="matrice-caractéristique-1"><a class="header" href="#matrice-caractéristique-1">Matrice caractéristique</a></h2>
 <p>La matrice représentative du système est alors plus complexe, et l'on commence à distinguer quelques difficultés à trouver une solution simple au système : </p>
 <p>$$
 T03 = 
@@ -408,6 +429,7 @@ S2C3 + S3C2 &amp; -S2S3 + C2C3 &amp; 0 &amp; a_1 + a_2C2 + a_3S23\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
+<h2 id="cinématique-normale-1"><a class="header" href="#cinématique-normale-1">Cinématique normale</a></h2>
 <p>Cependant, en utilisant toujours uniquement les équations sur (X, Y, Z), on obtient un système à 3 équations et 3 inconnues qu'il est possible de résoudre. </p>
 <p>$$ 
 \begin{cases}
@@ -416,10 +438,13 @@ y = sin(θ_1)(-a_2 * sin(θ_2) + a_3 * cos(θ_2 + θ_3))\\
 z = a_1 + a_2 * sin(θ_2)
 \end{cases}
 $$</p>
+<h2 id="cinématique-inverse-1"><a class="header" href="#cinématique-inverse-1">Cinématique inverse</a></h2>
+<h3 id="θ1-1"><a class="header" href="#θ1-1">θ<sub>1</sub></a></h3>
 <p>En effet, on constate qu'il est facile d'obtenir <strong>θ<sub>1</sub></strong>, en utilisant la même méthode que pour le bras 2ddl :
 $$
 θ_1 = atan2(\cfrac{y}{x})
 $$</p>
+<h3 id="θ3"><a class="header" href="#θ3">θ<sub>3</sub></a></h3>
 <p>Ensuite, <strong>sin(θ<sub>3</sub>)</strong> est obtenu en faisant la somme des trois équations misent au carré, et en utilisant les propriétés du sinus sin(a-b) :
 $$
 sin(θ_3) = \cfrac{a_1^2 - a_2^2 - a_3^2 + x^2 + y^2 + z^2 - 2 * a_1 * z} {2 * a_2 * a_3}
@@ -432,7 +457,8 @@ On peut noter que l'on aura deux valeurs possibles de <strong>θ<sub>3</sub></st
 $$
 θ_3 = atan2(\cfrac{S3}{C3})
 $$</p>
-<p>Une fois <strong>θ<sub>1</sub></strong> et <strong>θ<sub>2</sub></strong> obtenus, il est alors possible, en simplifiant les équations, de retrouver un système à deux équations et 2 inconnues (C2 et S2)
+<h3 id="θ2-1"><a class="header" href="#θ2-1">θ<sub>2</sub></a></h3>
+<p>Une fois <strong>θ<sub>1</sub></strong> et <strong>θ<sub>3</sub></strong> obtenus, il est alors possible, en simplifiant les équations, de retrouver un système à deux équations et 2 inconnues (C2 et S2)
 $$
 soit :
 \begin{cases}
@@ -709,6 +735,143 @@ print(f'theta_4 = {np.degrees(theta_4)}')
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="5-dof-robotic-arm"><a class="header" href="#5-dof-robotic-arm">5 dof robotic arm</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="méthode-alternative---algorithme-doptimisation"><a class="header" href="#méthode-alternative---algorithme-doptimisation">Méthode alternative - Algorithme d'optimisation</a></h1>
+<p>Pour ce chapitre la méthode change aprés la cinématique :</p>
+<ul>
+<li>Schéma cinématique <em>pour simplifier au maximum le système visuellement</em></li>
+<li>Matrices de transition <em>pour découper le problème et représenter mathématiquement chaque liaison</em></li>
+<li>Matrice caractéristique <em>pour rassembler les petits problèmes et représenter le système complet</em></li>
+<li>Cinématique normale <em>qui décrit la position du bras suivant les angles des liaisons</em></li>
+<li><strong>Equation à minimiser</strong> <em>à définir afin que notre système ait un objectif</em></li>
+<li><strong>Matrice jacobienne</strong> <em>à calculer pour obtenir les dérivées partielles de l'équation</em></li>
+<li><strong>Levenberg-Marquart</strong> <em>est l'algorithme itératif qui trouvera la solution</em></li>
+</ul>
+<p>Dans cette partie, nous allons nous concentrer sur une autre méthode pour la cinématique inverse, en réfléchissant différemment. Cette méthode est utilisable peut importe votre nombre de liaisons et vos restrictions. Cependant cette méthode n'est pas géométrique et nécessitera plusieurs itérations pour obtenir les angles voulus.</p>
+<p>Le cas étudié sera le même que pour le <a href="./4_dof.html">4 DOF</a>, mais vous pouvez appliquer cette méthode pour les autres cas.</p>
+<h2 id="schéma-cinématique-2"><a class="header" href="#schéma-cinématique-2">Schéma cinématique</a></h2>
+<p>On ne va pas échapper aux premières étapes nous amenant jusqu'aux équations de cinématique. Même si nous utilisons le cas du <a href="./4_dof.html">4 DOF</a> et que nous pouvons réutiliser leurs équations, nous vous proposont ici de faire un nouveau schéma qui permet de voir le système d'une autre approche.</p>
+<h3 id="θ1-2"><a class="header" href="#θ1-2">θ<sub>1</sub></a></h3>
+<p>Avec une vue du dessus, nous pouvons voir très simplement quelle équation nous devons choisir pour <strong>θ<sub>1</sub></strong> dans le cas spécifique de notre robot :<br />
+<img src="./images/4dof_levenberg_topview.drawio.png" alt="levenberg_top" /></p>
+<p>Ainsi nous voyons que l'angle <strong>θ<sub>1</sub></strong> est la seule liaison permettant de bouger sur le plan <strong>(x,y)</strong>. Nous pouvons directement faire de la cinématique inverse et conclure pour <strong>θ<sub>1</sub></strong> :</p>
+<p>$$
+θ_1 = atan2(\cfrac{y}{x})
+$$</p>
+<h2 id="matrices-de-transition-2"><a class="header" href="#matrices-de-transition-2">Matrices de transition</a></h2>
+<p>Nous pouvons aussi représenter la matrice de transition <strong>T01</strong> que nous pouvons déduire depuis le schéma ci-dessus :<br />
+$$
+T01 = 
+\left(\begin{array}{cc}
+C1 &amp; -S1 &amp; 0 &amp; 0\\
+S1 &amp; C1 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 1 &amp; a_1\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>Après voir fini cela, nous pouvons nous attaquer au reste du système en ignorant l'impact de <strong>θ<sub>1</sub></strong>. En faisant un schéma de profil, nous pouvons voir que les trois liaisons suivantes sont identiques :<br />
+<img src="./images/4dof_levenberg_sideview.drawio.png" alt="levenberg_top" /></p>
+<p>Comme nos liaisons sont identiques, nos matrices de transitions le sont aussi :
+$$
+T12 = 
+\left(\begin{array}{cc}
+C2 &amp; 0 &amp; -S2 &amp; a_2C2\\
+0 &amp; 1 &amp; 0 &amp; 0\\
+S2 &amp; 0 &amp; C2 &amp; a_2S2\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$
+$$
+T23 = 
+\left(\begin{array}{cc}
+C3 &amp; 0 &amp; -S3 &amp; a_3C3\\
+0 &amp; 1 &amp; 0 &amp; 0\\
+S3 &amp; 0 &amp; C3 &amp; a_3S3\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+T34 = 
+\left(\begin{array}{cc}
+C4 &amp; 0 &amp; -S4 &amp; a_4C4\\
+0 &amp; 1 &amp; 0 &amp; 0\\
+S4 &amp; 0 &amp; C4 &amp; a_4S4\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<h2 id="matrice-caractéristique-2"><a class="header" href="#matrice-caractéristique-2">Matrice caractéristique</a></h2>
+<p>En mutipliant <strong>T01*T12*T23*T34 = T04</strong> on obtient la matrice caractéritique du système :
+$$
+T04 =
+\left(\begin{array}{cc}
+? &amp; ? &amp; ? &amp; C1(a_2C2 + a_3C23+a_4C234)\\
+? &amp; ? &amp; ? &amp; S1(a_2C2 + a_3C23+a_4C234)\\
+? &amp; ? &amp; ? &amp; a_1 + a_2S2 + a_3S23 + a_4S234\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>avec  $$ C234 = cos(θ_2+θ_3+θ_4), S234 = sin(θ_2+θ_3+θ_4) $$</p>
+<h2 id="cinématique-normale-2"><a class="header" href="#cinématique-normale-2">Cinématique normale</a></h2>
+<p>Nous pouvons donc écrire les équations de cinématique :<br />
+$$ 
+\begin{cases}
+x = cos(θ_1)*(a_2*cos(θ_2)+a_3*cos(θ_2+θ_3+θ_4))\\
+y = sin(θ_1)*(a_2*cos(θ_2)+a_3*cos(θ_2+θ_3+θ_4))\\
+z = a_1 + a_2*sin(θ_2) + a_3*sin(θ_2+θ_3) + a_4*sin(θ_2+θ_3+θ_4)
+\end{cases}
+$$</p>
+<h2 id="equation-à-minimiser"><a class="header" href="#equation-à-minimiser">Equation à minimiser</a></h2>
+<p>Pour trouver quels angles nous devons choisir pour atteindre une certaine position <strong>(x,y,z)</strong> nous devons définir une équation qui, si minimale, alors confirme que les angles sont bons. Pour cela nous allons utiliser les équations de cinématique. Afin de minimiser la taille des matrices qui vont arriver, nous allons simplifier ces équations pour passer de 3 à 2 équations :<br />
+$$ 
+\begin{cases}
+\sqrt{x^{2}+y^{2}} = a_2*cos(θ_2)+a_3*cos(θ_2+θ_3+θ_4)\\
+z = a_1 + a_2*sin(θ_2) + a_3*sin(θ_2+θ_3) + a_4*sin(θ_2+θ_3+θ_4)
+\end{cases}<br />
+$$
+$$
+\begin{cases}
+0 = a_2*cos(θ_2)+a_3*cos(θ_2+θ_3+θ_4)-\sqrt{x^{2}+y^{2}}\\
+0 = a_1 + a_2*sin(θ_2) + a_3*sin(θ_2+θ_3) + a_4*sin(θ_2+θ_3+θ_4)-z
+\end{cases}
+$$</p>
+<p>Ici nos équations montrent la différence entre la positions voulue <strong>(x,y,z)</strong> et la position calculée à partir des angles. Si cette différence est égale à zéro, alors les angles choisis permettront d'arriver à la position voulue.
+On définit donc la fonction à minimiser :
+$$
+F(θ_2,θ_3,θ_4) = 
+\begin{cases}
+a_2*cos(θ_2)+a_3*cos(θ_2+θ_3+θ_4)-\sqrt{x^{2}+y^{2}}\\
+a_1 + a_2*sin(θ_2) + a_3*sin(θ_2+θ_3) + a_4*sin(θ_2+θ_3+θ_4)-z
+\end{cases}
+$$</p>
+<h2 id="matrice-jacobienne"><a class="header" href="#matrice-jacobienne">Matrice jacobienne</a></h2>
+<p>Nous devons alors calculer la matrice jacobienne associée à cette fonction. C'est donc la matrice des dérivées partielles de la fonction. Dans notre cas cela sera une matrice 2*3 car nous avons deux équations et 3 variables <strong>(θ<sub>2</sub>,θ<sub>3</sub>,θ<sub>4</sub>)</strong> cependant si vous avez gardé les 3 équations de la cinématique, vous aurez une matrice 3*3.
+$$
+J(F(θ_2,θ_3,θ_4)) = 
+\left(\begin{array}{cc}
+-a_2S2-a_3S23-a_4S234 &amp; -a_3S23-a_4S234 &amp; -a_4S234\\
+a_2C2+a_3C23+a_4C234 &amp; a_3C23+a_4C234 &amp; a_4C234\\
+\end{array}\right)
+$$</p>
+<h2 id="levenberg-marquart"><a class="header" href="#levenberg-marquart">Levenberg-marquart</a></h2>
+<p>Une fois la fonction et sa jacobienne créées, nous pouvons sortir l'algorithme d'optimisation/minimisation de notre choix. Dans cet exemple, nous avons choisi Levenberg-Marquart.</p>
+<p>En définissant <strong>Ɛ</strong> l'état de notre système <strong>(θ<sub>2</sub>,θ<sub>3</sub>,θ<sub>4</sub>)</strong>. L'algorithme agit de cette façon :</p>
+<pre><code>Jusqu'à N_max itérations :
+    Objectif = F(Ɛ)
+    Résidus = 2*J(F(Ɛ))*F(Ɛ)
+    Si Résidus est très petit:
+        On valide Ɛ et on sort de l'algorithme
+    Sinon:
+        Ɛ_new = Ɛ - (J(F(Ɛ))*F(Ɛ) + λ*I_3)^{-1} * J(F(Ɛ))*F(Ɛ)
+        Si ||F(Ɛ_new)|| &lt; ||F(Ɛ)||:
+            Ɛ = Ɛ_new
+            On diminue λ
+        Sinon:
+            On augmente λ 
+</code></pre>
+<p>A la sortie de cet algorithme, si Résidus est bien très petit, alors les angles <strong>Ɛ=(θ<sub>2</sub>,θ<sub>3</sub>,θ<sub>4</sub>)</strong> sont très proche de la valeure parfaite que l'on aurait trouvé avec la méthode géométrique.</p>
+<h2 id="conclusion-et-amélioration-1"><a class="header" href="#conclusion-et-amélioration-1">Conclusion et amélioration</a></h2>
+<p>Nous avons donc à la fin de notre algorithme les angles <strong>θ<sub>2</sub></strong>,<strong>θ<sub>3</sub></strong> et <strong>θ<sub>4</sub></strong> de plus nous avions déjà déterminé <strong>θ<sub>1</sub></strong> tout au début. La cinématique inverse est donc finie.</p>
+<p>Cette méthode permet de juste devoir calculer la cinématique directe et d'utiliser un algorithme itératif qui va résoudre la cinématique inverse pour nous. Un gros avantage de cette méthode est que peut importe le nombre d'angles à déterminer, une solution sera trouvée tant qu'assez d'itérations sont faites. Le problème de cette méthode est qu'on ne peut pas toujours se permettre de faire plein d'itérations.</p>
+<p>Si des contraintes vous sont imposées, vous pouvez aussi insérer ces contraintes au milieu de l'algorithme Levenberg-Marquart.
+Par exemple, des bornes peuvent être ajoutées afin de restreindre les variables à certaines valeurs.
+Juste après avoir calculé <strong>Ɛ_new</strong>, vous pouvez faire une condition du type :<br />
+<code> Si Ɛ_new &gt; Ɛ_max, Alors Ɛ_new = Ɛ_max</code></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="code-3"><a class="header" href="#code-3">Code</a></h1>
 <p>Fonctions de l'implémentation de <strong>Levenberg-Marquart</strong> et de sa fonction assosiée au problème <a href="./4_dof.html">4 DOF</a>.</p>
 <p>En dessous se trouve le code principal.</p>
@@ -724,7 +887,7 @@ def non_linear_least_squares_functions(pos, joints):
     print(f'{joints}')
 
     # f(x) returns the residuals
-    f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - pos[0],
+    f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - np.sqrt(pos[0]**2 + pos[1]**2),
                 joints[0] + joints[1]*np.sin(x[0]) + joints[2]*np.sin(x[0]+x[1]) + joints[3]*np.sin(x[0]+x[1]+x[2]) - pos[2]])
     # Df(x) is the N by 2 derivative matrix
     Df = lambda x: np.array([[-joints[1]*np.sin(x[0]) - joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[3]*np.sin(x[0]+x[1]+x[2])],
@@ -777,7 +940,7 @@ joints = [a1, a2, a3, a4] # vecteur avec la taille des différentes branches
 f, Df = lv.non_linear_least_squares_functions(pos, joints)
 x_lm, history_lm = lv.levenberg_marquardt(f, Df, [0,0,0], 0.1, 1e-4)
 
-thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi % 360]), np.degrees(x_lm)])
+thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi % 360fg]), np.degrees(x_lm)])
 print(f&quot;{thetas}&quot;)        
 print(f&quot;{thetas % 360}&quot;)
 

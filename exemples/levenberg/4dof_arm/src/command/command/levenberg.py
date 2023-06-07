@@ -10,7 +10,7 @@ def non_linear_least_squares_functions(pos, joints):
     print(f'{joints}')
 
     # f(x) returns the residuals
-    f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - pos[0],
+    f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - np.sqrt(pos[0]**2 + pos[1]**2),
                 joints[0] + joints[1]*np.sin(x[0]) + joints[2]*np.sin(x[0]+x[1]) + joints[3]*np.sin(x[0]+x[1]+x[2]) - pos[2]])
     # Df(x) is the N by 2 derivative matrix
     Df = lambda x: np.array([[-joints[1]*np.sin(x[0]) - joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[3]*np.sin(x[0]+x[1]+x[2])],

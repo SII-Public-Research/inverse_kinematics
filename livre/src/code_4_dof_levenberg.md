@@ -17,7 +17,7 @@ def non_linear_least_squares_functions(pos, joints):
     print(f'{joints}')
 
     # f(x) returns the residuals
-    f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - pos[0],
+    f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - np.sqrt(pos[0]**2 + pos[1]**2),
                 joints[0] + joints[1]*np.sin(x[0]) + joints[2]*np.sin(x[0]+x[1]) + joints[3]*np.sin(x[0]+x[1]+x[2]) - pos[2]])
     # Df(x) is the N by 2 derivative matrix
     Df = lambda x: np.array([[-joints[1]*np.sin(x[0]) - joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[3]*np.sin(x[0]+x[1]+x[2])],
@@ -74,7 +74,7 @@ joints = [a1, a2, a3, a4] # vecteur avec la taille des différentes branches
 f, Df = lv.non_linear_least_squares_functions(pos, joints)
 x_lm, history_lm = lv.levenberg_marquardt(f, Df, [0,0,0], 0.1, 1e-4)
 
-thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi % 360]), np.degrees(x_lm)])
+thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi % 360fg]), np.degrees(x_lm)])
 print(f"{thetas}")        
 print(f"{thetas % 360}")
 

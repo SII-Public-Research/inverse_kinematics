@@ -1,9 +1,19 @@
 # 2 dof robotic arm
 
+Pour ce chapitre ainsi que les suivants, la méthode sera similaire :
+- **Schéma cinématique** *pour simplifier au maximum le système visuellement*
+- **Matrices de transition** *pour découper le problème et représenter mathématiquement chaque liaison*
+- **Matrice caractéristique** *pour rassembler les petits problèmes et représenter le système complet*
+- **Cinématique normale** *qui décrit la position du bras suivant les angles des liaisons*
+- **Cinématique inverse** *qui décrit les angles des liaisons suivant la position du bras*
+
+## Schéma cinématique
 Commençons par monter uniquement deux servomoteurs sur notre bras. 
 En respectant les conventions de **Denavit-Hartenberg**, nous pouvons construire le schéma représentatif :
 ![schema_2dof](images/2dof_luna_arm.drawio.png)
 
+## Matrices de transition
+Une fois le schéma déssiné, il est possible de découper le problème en plus petites étapes. Chaque matrice de transition représente les rotations et transitions d'une liaison. 
 Une fois la position initiale du robot choisie, ici un angle de 90° entre le segment **OA** et **AM**, nous pouvons écrire les matrices de transitions correspondantes :
 
 $$
@@ -29,7 +39,7 @@ $$
 
 Avec $$ S1 = sin(θ_1), S2 = sin(θ_2), C1 = cos(θ_1), C2 = cos(θ_2) $$
 
-
+## Matrice caractéristique
 Une fois les matrices de transitions pour chaque liaisons réalisés, nous pouvons faire leur produit matriciel afin d'obtenir la matrice caractéristique du système étudié. 
 
 $$
@@ -42,7 +52,8 @@ S2 & C2 & 0 & a_1 + a_2S2\\\\
 \end{array}\right)
 $$
 
-Dans ce cas précis, avec uniquement deux liaisons, le système est relativement simple et nous pouvons nous contenter d'utiliser la dernière colonne de la matrice qui représente les équations de la position finale du bras en fonction des angles des moteurs.
+## Cinématique normale
+Dans ce cas précis, avec uniquement deux liaisons, le système est relativement simple et nous pouvons nous contenter d'utiliser la dernière colonne de la matrice qui représente les équations de la position finale du bras en fonction des angles des moteurs. Ces équations représentent à quelle position **(x,y,z)** le bout du bras est, connaissant les angles **θ<sub>1</sub>** et **θ<sub>2</sub>**. 
 
 $$ 
 \begin{cases}
@@ -52,6 +63,10 @@ $$
 \end{cases}
 $$
 
+C'est la cinématique du système. Cependant nous recherchons l'inverse : quels angles **θ<sub>1</sub>** et **θ<sub>2</sub>** prendre pour que le bras aille à la position **(x,y,z)** voulue.
+
+## Cinématique inverse
+### θ<sub>1</sub>
 Pour **θ<sub>1</sub>**, nous pouvons calculer son sinus et son cosinus à partir des équations de Y et X :
 $$
 \begin{cases}
@@ -66,6 +81,7 @@ $$
 θ_1 = atan2(\cfrac{y}{x})
 $$
 
+### θ<sub>2</sub>
 Pour **θ<sub>2</sub>**, nous pouvons calculer son sinus et son cosinus à partir des équations de Z et X (ou Y) :
 $$
 \begin{cases}
@@ -81,6 +97,7 @@ $$
 θ_2 = atan2(\cfrac{(z - a_1) * cos(θ_1)}{x})
 $$
 
+## Conclusion et amélioration
 Nous pouvons observer qu'il est relativement facile dans le cas de deux liaisons d'obtenir une cinématique inverse du système. 
 
 En revanche, le système est limité et ne peut atteindre qu'un champ réduit de points, correspondant à une sphère de rayon a2. 
