@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="Introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Methode.html"><strong aria-hidden="true">1.1.</strong> Methode</a></li><li class="chapter-item expanded "><a href="Organisation.html" class="active"><strong aria-hidden="true">1.2.</strong> Organisation du répertoire</a></li></ol></li><li class="chapter-item expanded "><a href="2_dof.html"><strong aria-hidden="true">2.</strong> Bras 2 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_2_dof.html"><strong aria-hidden="true">2.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="3_dof.html"><strong aria-hidden="true">3.</strong> Bras 3 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_3_dof.html"><strong aria-hidden="true">3.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="4_dof.html"><strong aria-hidden="true">4.</strong> Bras 4 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_4_dof.html"><strong aria-hidden="true">4.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="5_dof.html"><strong aria-hidden="true">5.</strong> Bras 5 DdL</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="Introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Methode.html"><strong aria-hidden="true">1.1.</strong> Methode</a></li><li class="chapter-item expanded "><a href="Organisation.html" class="active"><strong aria-hidden="true">1.2.</strong> Organisation du répertoire</a></li></ol></li><li class="chapter-item expanded "><a href="2_dof.html"><strong aria-hidden="true">2.</strong> Bras 2 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_2_dof.html"><strong aria-hidden="true">2.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="3_dof.html"><strong aria-hidden="true">3.</strong> Bras 3 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_3_dof.html"><strong aria-hidden="true">3.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="4_dof.html"><strong aria-hidden="true">4.</strong> Bras 4 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_4_dof.html"><strong aria-hidden="true">4.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="5_dof.html"><strong aria-hidden="true">5.</strong> Bras 5 DdL</a></li><li class="chapter-item expanded "><a href="levenberg.html"><strong aria-hidden="true">6.</strong> Méthode alternative - Algorithme d'optimisation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_4_dof_levenberg.html"><strong aria-hidden="true">6.1.</strong> Code</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -208,22 +208,6 @@ colcon build
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

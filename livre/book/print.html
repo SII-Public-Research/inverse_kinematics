@@ -86,7 +86,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="Introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Methode.html"><strong aria-hidden="true">1.1.</strong> Methode</a></li><li class="chapter-item expanded "><a href="Organisation.html"><strong aria-hidden="true">1.2.</strong> Organisation du répertoire</a></li></ol></li><li class="chapter-item expanded "><a href="2_dof.html"><strong aria-hidden="true">2.</strong> Bras 2 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_2_dof.html"><strong aria-hidden="true">2.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="3_dof.html"><strong aria-hidden="true">3.</strong> Bras 3 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_3_dof.html"><strong aria-hidden="true">3.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="4_dof.html"><strong aria-hidden="true">4.</strong> Bras 4 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_4_dof.html"><strong aria-hidden="true">4.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="5_dof.html"><strong aria-hidden="true">5.</strong> Bras 5 DdL</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="Introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Methode.html"><strong aria-hidden="true">1.1.</strong> Methode</a></li><li class="chapter-item expanded "><a href="Organisation.html"><strong aria-hidden="true">1.2.</strong> Organisation du répertoire</a></li></ol></li><li class="chapter-item expanded "><a href="2_dof.html"><strong aria-hidden="true">2.</strong> Bras 2 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_2_dof.html"><strong aria-hidden="true">2.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="3_dof.html"><strong aria-hidden="true">3.</strong> Bras 3 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_3_dof.html"><strong aria-hidden="true">3.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="4_dof.html"><strong aria-hidden="true">4.</strong> Bras 4 DdL</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_4_dof.html"><strong aria-hidden="true">4.1.</strong> Code</a></li></ol></li><li class="chapter-item expanded "><a href="5_dof.html"><strong aria-hidden="true">5.</strong> Bras 5 DdL</a></li><li class="chapter-item expanded "><a href="levenberg.html"><strong aria-hidden="true">6.</strong> Méthode alternative - Algorithme d'optimisation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="code_4_dof_levenberg.html"><strong aria-hidden="true">6.1.</strong> Code</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -229,6 +229,7 @@ S2 &amp; C2 &amp; 0 &amp; a_2S2\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
+<p>Avec $$ S1 = sin(θ_1), S2 = sin(θ_2), C1 = cos(θ_1), C2 = cos(θ_2) $$</p>
 <p>Une fois les matrices de transitions pour chaque liaisons réalisés, nous pouvons faire leur produit matriciel afin d'obtenir la matrice caractéristique du système étudié. </p>
 <p>$$
 T02 = 
@@ -250,8 +251,8 @@ $$</p>
 <p>Pour <strong>θ<sub>1</sub></strong>, nous pouvons calculer son sinus et son cosinus à partir des équations de Y et X :
 $$
 \begin{cases}
-S1  = \cfrac{y}{a_2 * cos(θ_2)}\\
-C1 = \cfrac{x}{a_2 * cos(θ_2)}
+sin(θ_1)  = \cfrac{y}{a_2 * cos(θ_2)}\\
+cos(θ_1) = \cfrac{x}{a_2 * cos(θ_2)}
 \end{cases}
 $$</p>
 <p>on obtient ainsi <strong>θ<sub>1</sub></strong> en faisant le calcul eq(y) / eq(x) :</p>
@@ -261,8 +262,8 @@ $$</p>
 <p>Pour <strong>θ<sub>2</sub></strong>, nous pouvons calculer son sinus et son cosinus à partir des équations de Z et X (ou Y) :
 $$
 \begin{cases}
-S2 = \cfrac{z - a_1}{a_2}\\
-C2 = \cfrac{x}{a_2 * cos(θ_1)}
+sin(θ_2) = \cfrac{z - a_1}{a_2}\\
+cos(θ_2) = \cfrac{x}{a_2 * cos(θ_1)}
 \end{cases}
 $$</p>
 <p>Enfin, nous pouvons obtenir l'angle <strong>θ<sub>2</sub></strong> de la même manière que <strong>θ<sub>1</sub></strong> :</p>
@@ -707,6 +708,89 @@ theta_4 = -theta_2 - theta_3
 print(f'theta_4 = {np.degrees(theta_4)}')
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="5-dof-robotic-arm"><a class="header" href="#5-dof-robotic-arm">5 dof robotic arm</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="méthode-alternative---algorithme-doptimisation"><a class="header" href="#méthode-alternative---algorithme-doptimisation">Méthode alternative - Algorithme d'optimisation</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="code-3"><a class="header" href="#code-3">Code</a></h1>
+<p>Fonctions de l'implémentation de <strong>Levenberg-Marquart</strong> et de sa fonction assosiée au problème <a href="./4_dof.html">4 DOF</a>.</p>
+<p>En dessous se trouve le code principal.</p>
+<pre><code class="language-python">&quot;&quot;&quot;
+Date: 2023-03-27
+Author: Romain
+This script was developed for target positionning with different algorithms.
+&quot;&quot;&quot;
+
+import numpy as np
+
+def non_linear_least_squares_functions(pos, joints):
+    print(f'{joints}')
+
+    # f(x) returns the residuals
+    f = lambda x: np.array([joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]) - pos[0],
+                joints[0] + joints[1]*np.sin(x[0]) + joints[2]*np.sin(x[0]+x[1]) + joints[3]*np.sin(x[0]+x[1]+x[2]) - pos[2]])
+    # Df(x) is the N by 2 derivative matrix
+    Df = lambda x: np.array([[-joints[1]*np.sin(x[0]) - joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[2]*np.sin(x[0]+x[1]) - joints[3]*np.sin(x[0]+x[1]+x[2]), -joints[3]*np.sin(x[0]+x[1]+x[2])],
+                             [joints[1]*np.cos(x[0]) + joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]), joints[2]*np.cos(x[0]+x[1]) + joints[3]*np.cos(x[0]+x[1]+x[2]), joints[3]*np.cos(x[0]+x[1]+x[2])]])
+    return f, Df
+
+def levenberg_marquardt(f, Df, x0, lambda0, tol = 1e-2, kmax = 100):
+    n = len(x0)
+    x = x0
+    lam = lambda0
+    obj = np.zeros((0,1))
+    res = np.zeros((0,1))
+    for k in range(kmax):
+        obj = np.vstack([obj, np.linalg.norm(f(x))**2])
+        res = np.vstack([res, np.linalg.norm(2*Df(x).T @ f(x))])
+        if np.linalg.norm(2*Df(x).T @ f(x)) &lt; tol:
+            break
+        xt = x - np.linalg.inv((Df(x).T @ Df(x)) + lam*np.eye(n)) @ (Df(x).T @ f(x))
+        
+        # handle 180° limit with 20° marge error (~10%*pi)
+        xt[0] = np.clip(xt[0],  0.1 * np.pi, 0.9 * np.pi) #   0° - 180°
+        xt[1] = np.clip(xt[1], -0.4 * np.pi, 0.4 * np.pi) # -90° - 90°
+        xt[2] = np.clip(xt[2], -0.4 * np.pi, 0.4 * np.pi) # -90° - 90°
+                
+
+        if np.linalg.norm(f(xt)) &lt; np.linalg.norm(f(x)) :
+            lam = 0.8*lam
+            x = xt
+        else:
+            lam = 2.0*lam
+    return x, {'Objective':obj, 'Residual':res}
+</code></pre>
+<p>Et ici le code principal faisant appel au code précédent.
+Ils vous faut mettre votre position x,y,z voulue dans les variables au début du programme.</p>
+<pre><code class="language-python">x = message.x
+y = message.y
+z = message.z
+
+print('received message')
+print('Objectif :')
+print(f'X = {x}')
+print(f'Y = {y}')
+print(f'Z = {z}')
+print('')
+
+pos = [x, y, z] # vecteur de la position voulue
+joints = [a1, a2, a3, a4] # vecteur avec la taille des différentes branches
+
+# Target location using L-M with LLS estimation as starting point and lambda = 0.1
+f, Df = lv.non_linear_least_squares_functions(pos, joints)
+x_lm, history_lm = lv.levenberg_marquardt(f, Df, [0,0,0], 0.1, 1e-4)
+
+thetas = np.concatenate([np.array([np.arctan2(y,x)*180/np.pi % 360]), np.degrees(x_lm)])
+print(f&quot;{thetas}&quot;)        
+print(f&quot;{thetas % 360}&quot;)
+
+# I have a problem on theta1 that can be &gt; 180, AND MY SERVO CANNOT
+if thetas[0] &gt; 180:
+    thetas[0] -= 180
+    thetas[1] = 180 - thetas[1]
+    thetas[2] = 180 - thetas[2]
+    thetas[3] = 180 - thetas[3]
+
+
+print(f&quot;theta_1 = {thetas[0]}, theta_2 = {thetas[1]}, theta_3 = {thetas[2]}, theta_4 = {thetas[3]} &quot;)
+</code></pre>
 
                     </main>
 
@@ -725,22 +809,6 @@ print(f'theta_4 = {np.degrees(theta_4)}')
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 
