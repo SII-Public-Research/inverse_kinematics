@@ -12,8 +12,8 @@ import numpy as np
 import math
 
 # Here we define all the constants we have on the arm
-a1 = 85.0
-a2 = 105.0 + 100.0
+a1 = 95.0
+a2 = 105.0 + 100.0 + 40.0
 
 class Algo(rclpy.node.Node):
     def __init__(self):
