@@ -63,7 +63,11 @@ sp.simplify(trans_mat_0_2[0, 3])
 sp.simplify(trans_mat_0_2[1, 3])
 sp.simplify(trans_mat_0_2[2, 3])
 
-
+# we get theta_1 by doing eqy / eqx
+theta_1 = math.atan2(y, x)
+theta_1_degree = np.degrees(theta_1)
+print(f'theta_1 = {theta_1}')
+print(f'theta_1_degree = {theta_1_degree}')
 
 # We can have S2 with Z eq
 S2 = (z - a1) / a2
@@ -77,13 +81,3 @@ print(f'theta_2 = {np.mod(np.degrees(theta_2), 360)}')
 print(f'theta_2_bis = {np.mod(np.degrees(theta_2_bis), 360)}')
 # Note that we have two possible values for theta_2. 
 # We noticed that the first one is all the time working fine on our case
-
-
-# We can have S1 from Y eq
-S1 = y / (a2 * np.cos(theta_2))
-# We can have C1 with X eq
-C1 = x / (a2 * np.cos(theta_2))
-# Finally, we got theta_2 from atan2
-theta_1 = math.atan2(S1, C1)
-print(f'theta_1 = {np.mod(np.degrees(theta_1), 360)}')
-```

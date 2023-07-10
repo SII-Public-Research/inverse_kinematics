@@ -4,7 +4,7 @@ Ajoutons un servo-moteur à notre bras.
 Nous obtenons ainsi un système comprenant 3 degrés de libertés. 
 
 ## Schéma cinématique
-En respectant les conventions de **Denavit-Hartenberg**, nous pouvons construire le schéma représentatif :
+
 ![schema_3dof](images/3dof_luna_arm.drawio.png)
 
 ## Matrices de transition
@@ -33,8 +33,8 @@ $$
 $$
 T23 = 
 \left(\begin{array}{cc}
-C3 & -S3 & 0 & a_3C2\\\\
-S3 & C3 & 0 & a_3S2\\\\
+C3 & -S3 & 0 & a_3C3\\\\
+S3 & C3 & 0 & a_3S3\\\\
 0 & 0 & 1 & 0\\\\
 0 & 0 & 0 & 1
 \end{array}\right)

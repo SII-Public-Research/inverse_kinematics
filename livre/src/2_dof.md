@@ -1,15 +1,9 @@
 # 2 dof robotic arm
 
-Pour ce chapitre ainsi que les suivants, la méthode sera similaire :
-- **Schéma cinématique** *pour simplifier au maximum le système visuellement*
-- **Matrices de transition** *pour découper le problème et représenter mathématiquement chaque liaison*
-- **Matrice caractéristique** *pour rassembler les petits problèmes et représenter le système complet*
-- **Cinématique normale** *qui décrit la position du bras suivant les angles des liaisons*
-- **Cinématique inverse** *qui décrit les angles des liaisons suivant la position du bras*
+Commençons par monter uniquement deux servomoteurs sur notre bras.
 
 ## Schéma cinématique
-Commençons par monter uniquement deux servomoteurs sur notre bras. 
-En respectant les conventions de **Denavit-Hartenberg**, nous pouvons construire le schéma représentatif :
+
 ![schema_2dof](images/2dof_luna_arm.drawio.png)
 
 ## Matrices de transition

@@ -91,11 +91,33 @@
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
                                 <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
@@ -174,9 +196,24 @@ Nous espérons ainsi pouvoir identifier à chaque étape les difficultés additi
 <p>Pour chaque modèle, nous utiliserons la convention de <a href="https://fr.wikipedia.org/wiki/Denavit-Hartenberg">Denavit-Hartenberg</a> pour visualiser de façon schématique le système. 
 Ensuite, nous définirons les matrices de transition pour chaque liaison, même si dans les premiers cas d'étude une approche graphique pourrait amener à une solution plus rapide. </p>
 <p>Enfin, nous préciserons pour chaque système une solution, relié à un script python puis une implémentation en Rust sur un système réel.</p>
+<h2 id="schéma-cinématique"><a class="header" href="#schéma-cinématique">Schéma cinématique</a></h2>
+<p><em>Pour simplifier au maximum le système visuellement</em></p>
+<p>Nous choisirons de respecter les conventions de <strong>Denavit-Hartenberg</strong> afin de schématiser nos sysèmes et de positionner des repères sur chaque liaison.</p>
+<h2 id="matrices-de-transition"><a class="header" href="#matrices-de-transition">Matrices de transition</a></h2>
+<p><em>Pour découper le problème et représenter mathématiquement chaque liaison</em></p>
+<p>exemple : </p>
+<p><img src="images/matriceTransition.png" alt="matriceTransition" /></p>
+<p>Elle est composée d'une <strong>matrice d'orientaiton</strong> 3x3 qui représente le changement de repère effectué au niveau d'une liaison parfaite (ici, nous aurons affaire uniquement à des liaisons pivots), et d'un <strong>vecteur de position</strong> qui représente le changement de repère d'un point d'interêt de notre système (point commun entre deux liaisons ou point final à positionner)</p>
+<h2 id="matrice-caractéristique"><a class="header" href="#matrice-caractéristique">Matrice caractéristique</a></h2>
+<p><em>pour rassembler les petits problèmes et représenter le système complet</em></p>
+<p>Cette matrice est obtenue en faisant en multipliants toutes les matrices obtenues. </p>
+<h2 id="cinématique-normale"><a class="header" href="#cinématique-normale">Cinématique normale</a></h2>
+<p><em>Calcule la position du bras suivant les angles des liaisons</em></p>
+<h2 id="cinématique-inverse"><a class="header" href="#cinématique-inverse">Cinématique inverse</a></h2>
+<p><em>Calcule les angles des liaisons suivant la position du bras</em></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="organisation-du-répertoire"><a class="header" href="#organisation-du-répertoire">Organisation du répertoire</a></h1>
 <p>Le répertoire est composé de 2 dossiers principaux. </p>
-<p>Chaque système sera représenté et étudié dans un sous-dossier du dossier ''exemples''.</p>
+<p>Chaque système sera étudié mathématiquement dans la partie 'livre' et aura une implémentation concrète dans le dossier ''exemples''.</p>
 <h2 id="livre"><a class="header" href="#livre"><strong>livre</strong></a></h2>
 <p><em>Créé à partir du template <a href="https://rust-lang.github.io/mdBook/index.html">md-book</a> fourni par la crate Rust du même nom.</em></p>
 <p>Vous pouvez lancer la lecture du livre via la commande suivante :</p>
@@ -186,15 +223,16 @@ Ensuite, nous définirons les matrices de transition pour chaque liaison, même 
 <p><em>Comprend l’environnement prêt à être déployé sur une raspberry pi. Nous vous invitons à vous renseigner sur l'utilisation de <a href="https://docs.ros.org/en/humble/index.html">ROS2</a> avant d'utiliser cette partie.</em></p>
 <p>Le programme est divisé en deux packages :</p>
 <ul>
-<li>
-<p><strong>command</strong> : c'est la partie algorithmie, qui prendra en entrée un message de type <em>geometry_msgs/msg/Point</em> pour le transformer en message de type <em>messages/msg/MotorsAngles</em>.</p>
-</li>
-<li>
-<p><strong>motors_ctr</strong> : c'est la partie contrôle des moteurs qui prendra en entré un message de type <em>messages/msg/MotorsAngles</em> afin de le transformer en commande moteurs.</p>
-</li>
+<li><strong>command</strong> : c'est la partie algorithmie, qui prendra en entrée un message de type <em>geometry_msgs/msg/Point</em> pour le transformer en message de type <em>messages/msg/MotorsAngles</em>.</li>
+<li><strong>motors_ctr</strong> : c'est la partie contrôle des moteurs qui prendra en entré un message de type <em>messages/msg/MotorsAngles</em> afin de le transformer en commande moteurs.</li>
+</ul>
+<p>Vous pourrez retrouver deux parties dans ces exemples :</p>
+<ul>
+<li><strong>classique</strong> : Pour les études de cinématiques utilisants la méthode la plus conramment utilisée.</li>
+<li><strong>levenberg</strong> : Pour l'utilisation d'algorithmes d'optimisation pour résoudre le système. </li>
 </ul>
 <p>Vous devrez dans un premier temps compiler le programme :</p>
-<pre><code class="language-bash">cd exemples/$exemple_name
+<pre><code class="language-bash">cd exemples/classique
 colcon build
 </code></pre>
 <p>Une fois réalisé, il est important de sourcer les exécutables générés afin que ROS puisse les retrouver.</p>
@@ -207,19 +245,10 @@ colcon build
 <pre><code class="language-bash">ros2 topic pub --once /cmd_arm geometry_msgs/msg/Point &quot;{x = 0.0, y = 0.0, z = 200.0}&quot;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="2-dof-robotic-arm"><a class="header" href="#2-dof-robotic-arm">2 dof robotic arm</a></h1>
-<p>Pour ce chapitre ainsi que les suivants, la méthode sera similaire :</p>
-<ul>
-<li><strong>Schéma cinématique</strong> <em>pour simplifier au maximum le système visuellement</em></li>
-<li><strong>Matrices de transition</strong> <em>pour découper le problème et représenter mathématiquement chaque liaison</em></li>
-<li><strong>Matrice caractéristique</strong> <em>pour rassembler les petits problèmes et représenter le système complet</em></li>
-<li><strong>Cinématique normale</strong> <em>qui décrit la position du bras suivant les angles des liaisons</em></li>
-<li><strong>Cinématique inverse</strong> <em>qui décrit les angles des liaisons suivant la position du bras</em></li>
-</ul>
-<h2 id="schéma-cinématique"><a class="header" href="#schéma-cinématique">Schéma cinématique</a></h2>
-<p>Commençons par monter uniquement deux servomoteurs sur notre bras. 
-En respectant les conventions de <strong>Denavit-Hartenberg</strong>, nous pouvons construire le schéma représentatif :
-<img src="images/2dof_luna_arm.drawio.png" alt="schema_2dof" /></p>
-<h2 id="matrices-de-transition"><a class="header" href="#matrices-de-transition">Matrices de transition</a></h2>
+<p>Commençons par monter uniquement deux servomoteurs sur notre bras.</p>
+<h2 id="schéma-cinématique-1"><a class="header" href="#schéma-cinématique-1">Schéma cinématique</a></h2>
+<p><img src="images/2dof_luna_arm.drawio.png" alt="schema_2dof" /></p>
+<h2 id="matrices-de-transition-1"><a class="header" href="#matrices-de-transition-1">Matrices de transition</a></h2>
 <p>Une fois le schéma déssiné, il est possible de découper le problème en plus petites étapes. Chaque matrice de transition représente les rotations et transitions d'une liaison. 
 Une fois la position initiale du robot choisie, ici un angle de 90° entre le segment <strong>OA</strong> et <strong>AM</strong>, nous pouvons écrire les matrices de transitions correspondantes :</p>
 <p>$$
@@ -241,7 +270,7 @@ S2 &amp; C2 &amp; 0 &amp; a_2S2\\
 \end{array}\right)
 $$</p>
 <p>Avec $$ S1 = sin(θ_1), S2 = sin(θ_2), C1 = cos(θ_1), C2 = cos(θ_2) $$</p>
-<h2 id="matrice-caractéristique"><a class="header" href="#matrice-caractéristique">Matrice caractéristique</a></h2>
+<h2 id="matrice-caractéristique-1"><a class="header" href="#matrice-caractéristique-1">Matrice caractéristique</a></h2>
 <p>Une fois les matrices de transitions pour chaque liaisons réalisés, nous pouvons faire leur produit matriciel afin d'obtenir la matrice caractéristique du système étudié. </p>
 <p>$$
 T02 = 
@@ -252,7 +281,7 @@ S2 &amp; C2 &amp; 0 &amp; a_1 + a_2S2\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
-<h2 id="cinématique-normale"><a class="header" href="#cinématique-normale">Cinématique normale</a></h2>
+<h2 id="cinématique-normale-1"><a class="header" href="#cinématique-normale-1">Cinématique normale</a></h2>
 <p>Dans ce cas précis, avec uniquement deux liaisons, le système est relativement simple et nous pouvons nous contenter d'utiliser la dernière colonne de la matrice qui représente les équations de la position finale du bras en fonction des angles des moteurs. Ces équations représentent à quelle position <strong>(x,y,z)</strong> le bout du bras est, connaissant les angles <strong>θ<sub>1</sub></strong> et <strong>θ<sub>2</sub></strong>. </p>
 <p>$$ 
 \begin{cases}
@@ -262,7 +291,7 @@ z = a_1 + a_2 * sin(θ_2)
 \end{cases}
 $$</p>
 <p>C'est la cinématique du système. Cependant nous recherchons l'inverse : quels angles <strong>θ<sub>1</sub></strong> et <strong>θ<sub>2</sub></strong> prendre pour que le bras aille à la position <strong>(x,y,z)</strong> voulue.</p>
-<h2 id="cinématique-inverse"><a class="header" href="#cinématique-inverse">Cinématique inverse</a></h2>
+<h2 id="cinématique-inverse-1"><a class="header" href="#cinématique-inverse-1">Cinématique inverse</a></h2>
 <h3 id="θ1"><a class="header" href="#θ1">θ<sub>1</sub></a></h3>
 <p>Pour <strong>θ<sub>1</sub></strong>, nous pouvons calculer son sinus et son cosinus à partir des équations de Y et X :
 $$
@@ -359,7 +388,11 @@ sp.simplify(trans_mat_0_2[0, 3])
 sp.simplify(trans_mat_0_2[1, 3])
 sp.simplify(trans_mat_0_2[2, 3])
 
-
+# we get theta_1 by doing eqy / eqx
+theta_1 = math.atan2(y, x)
+theta_1_degree = np.degrees(theta_1)
+print(f'theta_1 = {theta_1}')
+print(f'theta_1_degree = {theta_1_degree}')
 
 # We can have S2 with Z eq
 S2 = (z - a1) / a2
@@ -373,23 +406,13 @@ print(f'theta_2 = {np.mod(np.degrees(theta_2), 360)}')
 print(f'theta_2_bis = {np.mod(np.degrees(theta_2_bis), 360)}')
 # Note that we have two possible values for theta_2. 
 # We noticed that the first one is all the time working fine on our case
-
-
-# We can have S1 from Y eq
-S1 = y / (a2 * np.cos(theta_2))
-# We can have C1 with X eq
-C1 = x / (a2 * np.cos(theta_2))
-# Finally, we got theta_2 from atan2
-theta_1 = math.atan2(S1, C1)
-print(f'theta_1 = {np.mod(np.degrees(theta_1), 360)}')
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="3_dof-robotic-arm"><a class="header" href="#3_dof-robotic-arm">3_dof robotic arm</a></h1>
 <p>Ajoutons un servo-moteur à notre bras. 
 Nous obtenons ainsi un système comprenant 3 degrés de libertés. </p>
-<h2 id="schéma-cinématique-1"><a class="header" href="#schéma-cinématique-1">Schéma cinématique</a></h2>
-<p>En respectant les conventions de <strong>Denavit-Hartenberg</strong>, nous pouvons construire le schéma représentatif :
-<img src="images/3dof_luna_arm.drawio.png" alt="schema_3dof" /></p>
-<h2 id="matrices-de-transition-1"><a class="header" href="#matrices-de-transition-1">Matrices de transition</a></h2>
+<h2 id="schéma-cinématique-2"><a class="header" href="#schéma-cinématique-2">Schéma cinématique</a></h2>
+<p><img src="images/3dof_luna_arm.drawio.png" alt="schema_3dof" /></p>
+<h2 id="matrices-de-transition-2"><a class="header" href="#matrices-de-transition-2">Matrices de transition</a></h2>
 <p>Nous choisissons pour cette étude de changer la position initiale entre le segment <strong>OA</strong> et <strong>AB</strong>, que nous fixons à 180°. Pour la position initiale du 3ème moteur, nous choisissons un angle de 90° entre le segment <strong>AB</strong> et <strong>BM</strong>. Nous pouvons ainsi écrire les matrices de transitions correspondantes :</p>
 <p>$$
 T01 = 
@@ -412,13 +435,13 @@ $$</p>
 <p>$$
 T23 = 
 \left(\begin{array}{cc}
-C3 &amp; -S3 &amp; 0 &amp; a_3C2\\
-S3 &amp; C3 &amp; 0 &amp; a_3S2\\
+C3 &amp; -S3 &amp; 0 &amp; a_3C3\\
+S3 &amp; C3 &amp; 0 &amp; a_3S3\\
 0 &amp; 0 &amp; 1 &amp; 0\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
-<h2 id="matrice-caractéristique-1"><a class="header" href="#matrice-caractéristique-1">Matrice caractéristique</a></h2>
+<h2 id="matrice-caractéristique-2"><a class="header" href="#matrice-caractéristique-2">Matrice caractéristique</a></h2>
 <p>La matrice représentative du système est alors plus complexe, et l'on commence à distinguer quelques difficultés à trouver une solution simple au système : </p>
 <p>$$
 T03 = 
@@ -429,7 +452,7 @@ S2C3 + S3C2 &amp; -S2S3 + C2C3 &amp; 0 &amp; a_1 + a_2C2 + a_3S23\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
-<h2 id="cinématique-normale-1"><a class="header" href="#cinématique-normale-1">Cinématique normale</a></h2>
+<h2 id="cinématique-normale-2"><a class="header" href="#cinématique-normale-2">Cinématique normale</a></h2>
 <p>Cependant, en utilisant toujours uniquement les équations sur (X, Y, Z), on obtient un système à 3 équations et 3 inconnues qu'il est possible de résoudre. </p>
 <p>$$ 
 \begin{cases}
@@ -438,7 +461,7 @@ y = sin(θ_1)(-a_2 * sin(θ_2) + a_3 * cos(θ_2 + θ_3))\\
 z = a_1 + a_2 * sin(θ_2)
 \end{cases}
 $$</p>
-<h2 id="cinématique-inverse-1"><a class="header" href="#cinématique-inverse-1">Cinématique inverse</a></h2>
+<h2 id="cinématique-inverse-2"><a class="header" href="#cinématique-inverse-2">Cinématique inverse</a></h2>
 <h3 id="θ1-1"><a class="header" href="#θ1-1">θ<sub>1</sub></a></h3>
 <p>En effet, on constate qu'il est facile d'obtenir <strong>θ<sub>1</sub></strong>, en utilisant la même méthode que pour le bras 2ddl :
 $$
@@ -594,6 +617,90 @@ print(f'theta_2 = {np.degrees(theta_2)}')
 print(f'theta_3 = {np.degrees(theta_3)}')
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="4-dof-robotic-arm"><a class="header" href="#4-dof-robotic-arm">4 dof robotic arm</a></h1>
+<p>Ajoutons un servo-moteur à notre bras. 
+Nous obtenons ainsi un système comprenant 4 degrés de libertés. </p>
+<h2 id="schéma-cinématique-3"><a class="header" href="#schéma-cinématique-3">Schéma cinématique</a></h2>
+<p><img src="images/4dof_luna_arm.drawio.png" alt="schema_4dof" /></p>
+<h2 id="matrices-de-transition-3"><a class="header" href="#matrices-de-transition-3">Matrices de transition</a></h2>
+<p>La position initiale du 4ème moteur est fixée dans le même axe que le moteur précedent.</p>
+<p>$$
+T01 = 
+\left(\begin{array}{cc}
+C1 &amp; 0 &amp; S1 &amp; 0\\
+S1 &amp; 0 &amp; -C1 &amp; 0\\
+0 &amp; 1 &amp; 0 &amp; a_1\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>$$
+T12 = 
+\left(\begin{array}{cc}
+C2 &amp; -S2 &amp; 0 &amp; -a_2S2\\
+S2 &amp; C2 &amp; 0 &amp; a_2C2\\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>$$
+T23 = 
+\left(\begin{array}{cc}
+C3 &amp; -S3 &amp; 0 &amp; a_3C3\\
+S3 &amp; C3 &amp; 0 &amp; a_3S3\\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>$$
+T34 = 
+\left(\begin{array}{cc}
+C4&amp; -S4 &amp; 0 &amp; a_4C4 - a_5S4\\
+S4 &amp; C4 &amp; 0 &amp; a_4S4 + a_5C4\\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<h2 id="matrice-caractéristique-3"><a class="header" href="#matrice-caractéristique-3">Matrice caractéristique</a></h2>
+<p>La matrice représentative du système est la suivante :</p>
+<p>$$
+T04 = 
+\left(\begin{array}{cc}
+C1C234 &amp; -C1S234 &amp; S1 &amp; C1(-a_2S2 + a_3C23 + a_4C234 - a_5S234)\\
+S1C234 &amp; -S234 &amp; -C1 &amp; S1(-a_2S2 + a_3C23 + a_4C234 - a_5S234)\\
+S234 &amp; C234 &amp; 0 &amp; a_1 + a_2C2 + a_3S23 + a_4S234 + a_5C234\\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{array}\right)
+$$</p>
+<p>Si nous continuons à utiliser uniquement le vecteur Position, nous nous retrouvons avec un système à 4 inconnues pour 3 équations. 
+Nous avons donc besoin de caractériser notre système à l'aide de nouvelles équations.
+Nous allons donc piocher dans la matrice d'orientation afin de fixer certaines de nos inconnues et ainsi fixer une orientation du dernier élement de notre système. 
+Pour notre cas d'étude, nous allons choisir d'orienter le dernier segment <strong>[CM]</strong> vers le haut. 
+Cela revient à :</p>
+<p>$$
+z_0 = y_4
+$$</p>
+<p>L'équation qui régit cette égalité est celle présente en coordonnée [2, 1] de la matrice de rotation. Nous devons donc faire en sorte que cette équation soit égale à 1 pour satisfaire notre exigence :</p>
+<p>$$
+sin(θ_2 + θ_3 + θ_4) = 1
+$$</p>
+<p>Une fois ce choix effectué, nous pouvons découper notre système en deux partie :</p>
+<ul>
+<li>les <strong>3 premiers joints</strong> déterminerons le positionnement du bras</li>
+<li>le <strong>4eme joint</strong> déterminera l'orientation </li>
+</ul>
+<p>Pour le positionnement, nous pouvons donc à nouveau utiliser les calculs effectués lors de l'étude du système à 3 servomoteurs, en ajustant tout de même les données de distance afin d'inclure la suite du bras :</p>
+<p>$$ 
+\begin{cases}
+x = x - a_4 * cos(θ_1) \\
+y = y - a_4 * sin(θ_1)\\
+a_1 = a_1 + a_5
+\end{cases}
+$$</p>
+<p>Une fois ces calculs effectués, nous pouvons calculer la valeure de θ_4 à partir de la matrice de transition[2, 1] :</p>
+<p>$$ 
+\begin{cases}
+θ_4 = -θ_2 - θ_3 
+\end{cases}
+$$</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="code-2"><a class="header" href="#code-2">Code</a></h1>
 <pre><code class="language-python"># -*- coding: utf-8 -*-
 &quot;&quot;&quot;
@@ -747,7 +854,7 @@ print(f'theta_4 = {np.degrees(theta_4)}')
 </ul>
 <p>Dans cette partie, nous allons nous concentrer sur une autre méthode pour la cinématique inverse, en réfléchissant différemment. Cette méthode est utilisable peut importe votre nombre de liaisons et vos restrictions. Cependant cette méthode n'est pas géométrique et nécessitera plusieurs itérations pour obtenir les angles voulus.</p>
 <p>Le cas étudié sera le même que pour le <a href="./4_dof.html">4 DOF</a>, mais vous pouvez appliquer cette méthode pour les autres cas.</p>
-<h2 id="schéma-cinématique-2"><a class="header" href="#schéma-cinématique-2">Schéma cinématique</a></h2>
+<h2 id="schéma-cinématique-4"><a class="header" href="#schéma-cinématique-4">Schéma cinématique</a></h2>
 <p>On ne va pas échapper aux premières étapes nous amenant jusqu'aux équations de cinématique. Même si nous utilisons le cas du <a href="./4_dof.html">4 DOF</a> et que nous pouvons réutiliser leurs équations, nous vous proposont ici de faire un nouveau schéma qui permet de voir le système d'une autre approche.</p>
 <h3 id="θ1-2"><a class="header" href="#θ1-2">θ<sub>1</sub></a></h3>
 <p>Avec une vue du dessus, nous pouvons voir très simplement quelle équation nous devons choisir pour <strong>θ<sub>1</sub></strong> dans le cas spécifique de notre robot :<br />
@@ -756,7 +863,7 @@ print(f'theta_4 = {np.degrees(theta_4)}')
 <p>$$
 θ_1 = atan2(\cfrac{y}{x})
 $$</p>
-<h2 id="matrices-de-transition-2"><a class="header" href="#matrices-de-transition-2">Matrices de transition</a></h2>
+<h2 id="matrices-de-transition-4"><a class="header" href="#matrices-de-transition-4">Matrices de transition</a></h2>
 <p>Nous pouvons aussi représenter la matrice de transition <strong>T01</strong> que nous pouvons déduire depuis le schéma ci-dessus :<br />
 $$
 T01 = 
@@ -795,7 +902,7 @@ S4 &amp; 0 &amp; C4 &amp; a_4S4\\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{array}\right)
 $$</p>
-<h2 id="matrice-caractéristique-2"><a class="header" href="#matrice-caractéristique-2">Matrice caractéristique</a></h2>
+<h2 id="matrice-caractéristique-4"><a class="header" href="#matrice-caractéristique-4">Matrice caractéristique</a></h2>
 <p>En mutipliant <strong>T01*T12*T23*T34 = T04</strong> on obtient la matrice caractéritique du système :
 $$
 T04 =
@@ -807,7 +914,7 @@ T04 =
 \end{array}\right)
 $$</p>
 <p>avec  $$ C234 = cos(θ_2+θ_3+θ_4), S234 = sin(θ_2+θ_3+θ_4) $$</p>
-<h2 id="cinématique-normale-2"><a class="header" href="#cinématique-normale-2">Cinématique normale</a></h2>
+<h2 id="cinématique-normale-3"><a class="header" href="#cinématique-normale-3">Cinématique normale</a></h2>
 <p>Nous pouvons donc écrire les équations de cinématique :<br />
 $$ 
 \begin{cases}
@@ -972,6 +1079,22 @@ print(f&quot;theta_1 = {thetas[0]}, theta_2 = {thetas[1]}, theta_3 = {thetas[2]}
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 
